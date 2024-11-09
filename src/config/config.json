@@ -1,0 +1,11 @@
+{
+  "development": {
+    "username": "binh",
+    "password": "binh",
+    "database": "twitter_clone",
+    "host": "172.17.35.44",
+    "dialect": "mysql",
+    "logging": false,
+    "timezone": "+07:00"
+  }
+}
