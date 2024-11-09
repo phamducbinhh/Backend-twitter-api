@@ -1,4 +1,4 @@
-CREATE TABLE User (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE User (
     verify_status ENUM('Unverified', 'Verified', 'Banned') DEFAULT 'Unverified'
 );
 
-CREATE TABLE Tweet (
+CREATE TABLE tweets (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     type ENUM('Tweet', 'Retweet', 'Comment', 'QuoteTweet') NOT NULL,
@@ -29,13 +29,13 @@ CREATE TABLE Tweet (
     FOREIGN KEY (user_id) REFERENCES User(id)
 );
 
-CREATE TABLE Hashtag (
+CREATE TABLE hashtags (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Follower (
+CREATE TABLE followers (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     followed_user_id INT NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE Follower (
     FOREIGN KEY (followed_user_id) REFERENCES User(id)
 );
 
-CREATE TABLE Like (
+CREATE TABLE likes (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     tweet_id INT NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE Like (
     FOREIGN KEY (tweet_id) REFERENCES Tweet(id)
 );
 
-CREATE TABLE Bookmark (
+CREATE TABLE bookmarks (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     tweet_id INT NOT NULL,
@@ -62,13 +62,13 @@ CREATE TABLE Bookmark (
     FOREIGN KEY (tweet_id) REFERENCES Tweet(id)
 );
 
-CREATE TABLE Media (
+CREATE TABLE media (
     id SERIAL PRIMARY KEY,
     type ENUM('Image', 'Video') NOT NULL,
     url VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE RefreshToken (
+CREATE TABLE refresh_tokens (
     id SERIAL PRIMARY KEY,
     token VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
