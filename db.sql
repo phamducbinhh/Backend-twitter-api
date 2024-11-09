@@ -13,7 +13,8 @@ CREATE TABLE users (
     website VARCHAR(255),
     username VARCHAR(50) UNIQUE,
     cover_photo VARCHAR(255),
-    verify_status ENUM('Unverified', 'Verified', 'Banned') DEFAULT 'Unverified'
+    verify_status ENUM('Unverified', 'Verified', 'Banned') DEFAULT 'Unverified',
+    CHECK (verify_status IN ('Unverified', 'Verified', 'Banned'))
 );
 
 CREATE TABLE tweets (
@@ -26,7 +27,9 @@ CREATE TABLE tweets (
     user_views INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES User(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES tweets(id) ON DELETE SET NULL,
+    CHECK (type IN ('Tweet', 'Retweet', 'Comment', 'QuoteTweet'))
 );
 
 CREATE TABLE hashtags (
@@ -40,8 +43,9 @@ CREATE TABLE followers (
     user_id INT NOT NULL,
     followed_user_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES User(id),
-    FOREIGN KEY (followed_user_id) REFERENCES User(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (followed_user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (user_id, followed_user_id)
 );
 
 CREATE TABLE likes (
@@ -49,8 +53,9 @@ CREATE TABLE likes (
     user_id INT NOT NULL,
     tweet_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES User(id),
-    FOREIGN KEY (tweet_id) REFERENCES Tweet(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (tweet_id) REFERENCES tweets(id) ON DELETE CASCADE,
+    UNIQUE (user_id, tweet_id)
 );
 
 CREATE TABLE bookmarks (
@@ -58,14 +63,25 @@ CREATE TABLE bookmarks (
     user_id INT NOT NULL,
     tweet_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES User(id),
-    FOREIGN KEY (tweet_id) REFERENCES Tweet(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (tweet_id) REFERENCES tweets(id) ON DELETE CASCADE,
+    UNIQUE (user_id, tweet_id)
 );
 
 CREATE TABLE media (
     id SERIAL PRIMARY KEY,
     type ENUM('Image', 'Video') NOT NULL,
-    url VARCHAR(255) NOT NULL
+    url VARCHAR(255) NOT NULL,
+    CHECK (type IN ('Image', 'Video'))
+);
+
+CREATE TABLE tweet_media (
+    id SERIAL PRIMARY KEY,
+    tweet_id INT NOT NULL,
+    media_id INT NOT NULL,
+    FOREIGN KEY (tweet_id) REFERENCES tweets(id) ON DELETE CASCADE,
+    FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE,
+    UNIQUE (tweet_id, media_id)
 );
 
 CREATE TABLE refresh_tokens (
@@ -73,5 +89,23 @@ CREATE TABLE refresh_tokens (
     token VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tweet_hashtags (
+    id SERIAL PRIMARY KEY,
+    tweet_id INT NOT NULL,
+    hashtag_id INT NOT NULL,
+    FOREIGN KEY (tweet_id) REFERENCES tweets(id) ON DELETE CASCADE,
+    FOREIGN KEY (hashtag_id) REFERENCES hashtags(id) ON DELETE CASCADE,
+    UNIQUE (tweet_id, hashtag_id)
+);
+
+CREATE TABLE mentions (
+    id SERIAL PRIMARY KEY,
+    tweet_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (tweet_id) REFERENCES tweets(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE(tweet_id, user_id)
 );
