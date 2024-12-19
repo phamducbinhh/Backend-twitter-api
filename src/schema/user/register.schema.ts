@@ -10,7 +10,7 @@ export interface RegisterUserData {
   date_of_birth: string // ISO8601 format
 }
 
-export class RegisterUser {
+export class RegisterUserSchema {
   name: string
   email: string
   password: string

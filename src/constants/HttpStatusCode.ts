@@ -1,4 +1,4 @@
-const HttpStatusCode = {
+export const HttpStatusCode = {
   SUCCESS: 200, //Dữ liệu hợp lệ và được trả về thành công.
   CREATED: 201, //Dữ liệu mới đã được tạo thành công.
   BAD_REQUEST: 400, //Dữ liệu gửi lên không hợp lệ hoặc thiếu thông tin cần thiết.
@@ -9,5 +9,3 @@ const HttpStatusCode = {
   INTERNAL_SERVER_ERROR: 500, //Lỗi server.
   CONFLICT: 409 //Tài nguyên đã tồn tại.
 }
-
-module.exports = HttpStatusCode

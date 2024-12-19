@@ -1,4 +1,4 @@
-const validate = (requestType: any) => {
+export const validate = (requestType: any) => {
   return (req: any, res: any, next: any) => {
     const { error } = requestType.validate(req.body)
 
@@ -12,5 +12,3 @@ const validate = (requestType: any) => {
     next()
   }
 }
-
-module.exports = validate

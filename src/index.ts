@@ -1,8 +1,9 @@
-import express from 'express'
-import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import express from 'express'
 import rateLimit from 'express-rate-limit'
 import { connectDatabase } from './dbs/init.db'
+import initRoutes from './routes'
 const app = express()
 
 const corsOptions = {
@@ -29,6 +30,8 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.use(express.urlencoded({ extended: true }))
+
+initRoutes(app)
 
 const startServer = async () => {
   try {
