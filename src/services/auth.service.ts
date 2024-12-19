@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
+import { USERS_MESSAGES } from '~/constants/messages'
 import { LoginUserData } from '~/schema/user/login.schema'
 import { RegisterUserData } from '~/schema/user/register.schema'
 import generateToken from '~/utils/jwt'
@@ -30,28 +31,24 @@ class AuthServices {
     const { email, password } = body
 
     if (!email) {
-      return this.handleResponse(HttpStatusCode.BAD_REQUEST, false, 'Vui lòng cung cấp email')
+      return this.handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.EMAIL_IS_REQUIRED)
     }
 
     try {
       const user = await db.User.findOne({ where: { email } })
 
       if (!user) {
-        return this.handleResponse(HttpStatusCode.NOT_FOUND, false, 'Email không tồn tại trong hệ thống')
-      }
-
-      if (!user.password) {
-        return this.handleResponse(HttpStatusCode.BAD_REQUEST, false, 'Vui lòng đăng nhập bằng Google/Facebook.')
+        return this.handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.EMAIL_INCORRECT)
       }
 
       if (!this.comparePassword(password, user.password)) {
-        return this.handleResponse(HttpStatusCode.UNAUTHORIZED, false, 'Mật khẩu không chính xác')
+        return this.handleResponse(HttpStatusCode.UNAUTHORIZED, false, USERS_MESSAGES.PASSWORD_IS_INCORRECT)
       }
 
       const token = generateToken(user.id)
       this.setTokenCookie(res, token)
 
-      return this.handleResponse(HttpStatusCode.SUCCESS, true, 'Đăng nhập thành công', { token })
+      return this.handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.LOGIN_SUCCESS, { token })
     } catch (error: any) {
       throw new Error(error.message)
     }
@@ -66,11 +63,15 @@ class AuthServices {
       })
 
       if (userExists) {
-        return this.handleResponse(HttpStatusCode.CONFLICT, false, 'Email đã tồn tại trong hệ thống')
+        return this.handleResponse(HttpStatusCode.CONFLICT, false, USERS_MESSAGES.EMAIL_ALREADY_EXISTS)
       }
 
       if (password !== confirmPassword) {
-        return this.handleResponse(HttpStatusCode.BAD_REQUEST, false, 'Mật khẩu không trùng nhau')
+        return this.handleResponse(
+          HttpStatusCode.BAD_REQUEST,
+          false,
+          USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD
+        )
       }
 
       const hashedPassword = this.hashPassword(password)
@@ -85,7 +86,7 @@ class AuthServices {
       const token = generateToken(user.id)
       this.setTokenCookie(res, token)
 
-      return this.handleResponse(HttpStatusCode.CREATED, true, 'Đăng ký thành công', { token })
+      return this.handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token })
     } catch (error: any) {
       throw new Error(error.message)
     }

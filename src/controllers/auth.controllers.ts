@@ -1,4 +1,5 @@
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
+import { USERS_MESSAGES } from '~/constants/messages'
 import authService from '~/services/auth.service'
 import { handleError } from '~/utils/utility'
 
@@ -34,7 +35,7 @@ class AuthController {
       res.clearCookie('token')
       return res.status(HttpStatusCode.SUCCESS).json({
         success: true,
-        message: 'Logout successfully'
+        message: USERS_MESSAGES.LOGOUT_SUCCESS
       })
     } catch (error: any) {
       return handleError(res, error)
