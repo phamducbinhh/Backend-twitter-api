@@ -38,7 +38,7 @@ class AuthServices {
     }
 
     if (!this.comparePassword(password, user.password)) {
-      throwError(USERS_MESSAGES.PASSWORD_IS_INCORRECT, HttpStatusCode.UNAUTHORIZED)
+      throwError(USERS_MESSAGES.PASSWORD_IS_INCORRECT, HttpStatusCode.BAD_REQUEST)
     }
 
     const token = generateToken(user.id)
