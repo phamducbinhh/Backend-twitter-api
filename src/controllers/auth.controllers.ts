@@ -8,9 +8,11 @@ class AuthController {
   async login(req: any, res: any) {
     try {
       const response = await authService.login({ body: req.body }, res)
-      if (response.success === false) return res.status(HttpStatusCode.NOT_FOUND).json(response)
-
-      return res.status(HttpStatusCode.SUCCESS).json(response)
+      return res.status(response.statusCode).json({
+        success: response.success,
+        message: response.message,
+        data: response.data
+      })
     } catch (error: any) {
       return handleError(res, error)
     }
@@ -18,9 +20,11 @@ class AuthController {
   async register(req: any, res: any) {
     try {
       const response = await authService.register({ body: req.body }, res)
-      if (response.success === false) return res.status(HttpStatusCode.NOT_FOUND).json(response)
-
-      return res.status(HttpStatusCode.CREATED).json(response)
+      return res.status(response.statusCode).json({
+        success: response.success,
+        message: response.message,
+        data: response.data
+      })
     } catch (error: any) {
       return handleError(res, error)
     }
