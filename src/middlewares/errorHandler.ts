@@ -1,22 +1,15 @@
 import { NextFunction, Request, Response } from 'express'
-import { ErrorResponse } from '~/utils/errorResponse'
+import { HttpStatusCode } from '~/constants/HttpStatusCode'
 
+/**
+ * Global error handling middleware.
+ */
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  let error = { ...err }
-  error.message = err.message
+  const statusCode = err.statusCode || HttpStatusCode.INTERNAL_SERVER_ERROR
+  const message = err.message || 'Internal Server Error'
 
-  // Log lỗi trong môi trường phát triển
-  if (process.env.NODE_ENV === 'development') {
-    console.error(err.stack)
-  }
-
-  // Xử lý lỗi không xác định
-  if (!(err instanceof ErrorResponse)) {
-    error = new ErrorResponse('Internal Server Error', 500, false)
-  }
-
-  return res.status(error.statusCode || 500).json({
+  res.status(statusCode).json({
     success: false,
-    message: error.message || 'Server Error'
+    message
   })
 }
