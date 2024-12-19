@@ -73,11 +73,11 @@ class AuthServices {
           USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD
         )
       }
-
       const hashedPassword = this.hashPassword(password)
       const user = await db.User.create({
         email,
         name,
+        username: name.toLowerCase().replace(/\s+/g, ''),
         date_of_birth,
         password: hashedPassword,
         confirmPassword: hashedPassword
