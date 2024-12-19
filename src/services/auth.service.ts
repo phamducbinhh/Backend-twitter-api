@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt'
-import { envConfig } from '~/constants/config'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { LoginUserData } from '~/schema/user/login.schema'
 import { RegisterUserData } from '~/schema/user/register.schema'
@@ -19,7 +18,7 @@ class AuthServices {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: envConfig.jwtExpiresCookies
+      maxAge: 24 * 60 * 60 * 1000
     })
   }
 
