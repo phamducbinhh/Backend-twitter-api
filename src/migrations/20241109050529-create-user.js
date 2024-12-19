@@ -46,7 +46,7 @@ module.exports = {
       },
       username: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: true
       },
       cover_photo: {
