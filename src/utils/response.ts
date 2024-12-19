@@ -1,22 +1,18 @@
 import { Response } from 'express'
 
-interface ResponseData {
-  success: boolean
-  message: string
-  data?: any
-}
-
-/**
- * Utility function to send a standardized response.
- * @param res - Express response object
- * @param statusCode - HTTP status code to return
- * @param responseData - Object containing success, message, and data
- */
-export const sendResponse = (res: Response, statusCode: number, responseData: ResponseData) => {
-  const { success, message, data = null } = responseData
-  return res.status(statusCode).json({
+export const sendResponse = (
+  res: Response,
+  statusCode: number,
+  { success, message, data }: { success: boolean; message: string; data?: any }
+) => {
+  const responseBody: { success: boolean; message: string; data?: any } = {
     success,
-    message,
-    data
-  })
+    message
+  }
+
+  if (data !== undefined && data !== null) {
+    responseBody.data = data
+  }
+
+  return res.status(statusCode).json(responseBody)
 }
