@@ -1,46 +1,34 @@
-import { HttpStatusCode } from '~/constants/HttpStatusCode'
-import { USERS_MESSAGES } from '~/constants/messages'
+import { Request, Response } from 'express'
 import authService from '~/services/auth.service'
-import { handleError } from '~/utils/utility'
+import asyncHandler from '~/middlewares/asyncHandler'
+import { sendResponse } from '~/utils/response'
 
 class AuthController {
-  constructor() {}
+  login = asyncHandler(async (req: Request, res: Response) => {
+    const response = await authService.login({ body: req.body }, res)
+    return sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message,
+      data: response.data
+    })
+  })
 
-  async login(req: any, res: any) {
-    try {
-      const response = await authService.login({ body: req.body }, res)
-      return res.status(response.statusCode).json({
-        success: response.success,
-        message: response.message,
-        data: response.data
-      })
-    } catch (error: any) {
-      return handleError(res, error)
-    }
-  }
-  async register(req: any, res: any) {
-    try {
-      const response = await authService.register({ body: req.body }, res)
-      return res.status(response.statusCode).json({
-        success: response.success,
-        message: response.message,
-        data: response.data
-      })
-    } catch (error: any) {
-      return handleError(res, error)
-    }
-  }
-  async logout(req: any, res: any) {
-    try {
-      res.clearCookie('token')
-      return res.status(HttpStatusCode.SUCCESS).json({
-        success: true,
-        message: USERS_MESSAGES.LOGOUT_SUCCESS
-      })
-    } catch (error: any) {
-      return handleError(res, error)
-    }
-  }
+  register = asyncHandler(async (req: Request, res: Response) => {
+    const response = await authService.register({ body: req.body }, res)
+    return sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message,
+      data: response.data
+    })
+  })
+
+  logout = asyncHandler(async (req: Request, res: Response) => {
+    res.clearCookie('token')
+    return sendResponse(res, 200, {
+      success: true,
+      message: 'Logout successfully'
+    })
+  })
 }
 
 const authController = new AuthController()

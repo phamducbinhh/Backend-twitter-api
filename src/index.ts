@@ -3,6 +3,7 @@ import cors from 'cors'
 import express from 'express'
 import rateLimit from 'express-rate-limit'
 import { connectDatabase } from './dbs/init.db'
+import { errorHandler } from './middlewares/errorHandler'
 import initRoutes from './routes'
 const app = express()
 
@@ -32,6 +33,8 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
 
 initRoutes(app)
+
+app.use(errorHandler)
 
 const startServer = async () => {
   try {
