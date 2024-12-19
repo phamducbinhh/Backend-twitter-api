@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { USERS_MESSAGES } from '~/constants/messages'
 import authService from '~/services/auth.service'
 import { sendResponse } from '~/utils/response'
+const db = require('../models')
 
 class AuthController {
   async login(req: Request, res: Response) {
@@ -22,7 +23,21 @@ class AuthController {
     })
   }
 
-  async logout(req: Request, res: Response) {
+  async refreshToken(req: Request, res: Response) {
+    const response = await authService.refreshToken({ body: req.body }, res)
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message,
+      data: response.data
+    })
+  }
+
+  async logout(req: Request | any, res: Response) {
+    const { id } = req.user
+    await db.RefreshToken.destroy({
+      where: { user_id: id }
+    })
+
     res.clearCookie('token')
     sendResponse(res, 200, {
       success: true,

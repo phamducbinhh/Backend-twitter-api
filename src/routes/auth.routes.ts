@@ -13,4 +13,6 @@ router.post('/login', validate(LoginUserSchema), asyncHandler(authController.log
 
 router.post('/logout', verifyToken, asyncHandler(authController.logout))
 
+router.post('/refresh-token', verifyToken, asyncHandler(authController.refreshToken))
+
 export default router

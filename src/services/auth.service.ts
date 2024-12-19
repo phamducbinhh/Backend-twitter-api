@@ -34,62 +34,79 @@ class AuthServices {
       return this.handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.EMAIL_IS_REQUIRED)
     }
 
-    try {
-      const user = await db.User.findOne({ where: { email } })
+    const user = await db.User.findOne({ where: { email } })
 
-      if (!user) {
-        return this.handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.EMAIL_INCORRECT)
-      }
-
-      if (!this.comparePassword(password, user.password)) {
-        return this.handleResponse(HttpStatusCode.UNAUTHORIZED, false, USERS_MESSAGES.PASSWORD_IS_INCORRECT)
-      }
-
-      const token = generateToken(user.id)
-      this.setTokenCookie(res, token)
-
-      return this.handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.LOGIN_SUCCESS, { token })
-    } catch (error: any) {
-      throw new Error(error.message)
+    if (!user) {
+      return this.handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.EMAIL_INCORRECT)
     }
+
+    if (!this.comparePassword(password, user.password)) {
+      return this.handleResponse(HttpStatusCode.UNAUTHORIZED, false, USERS_MESSAGES.PASSWORD_IS_INCORRECT)
+    }
+
+    const token = generateToken(user.id)
+    this.setTokenCookie(res, token)
+
+    const refreshToken = generateToken(user.id, '7d')
+    await db.RefreshToken.create({ token: refreshToken, user_id: user.id })
+
+    return this.handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.LOGIN_SUCCESS, { token, refreshToken })
   }
 
   async register({ body }: { body: RegisterUserData }, res: any) {
     const { email, password, confirmPassword, name, date_of_birth } = body
 
-    try {
-      const userExists = await db.User.findOne({
-        where: { [db.Sequelize.Op.or]: [{ email }] }
-      })
+    const userExists = await db.User.findOne({
+      where: { [db.Sequelize.Op.or]: [{ email }] }
+    })
 
-      if (userExists) {
-        return this.handleResponse(HttpStatusCode.CONFLICT, false, USERS_MESSAGES.EMAIL_ALREADY_EXISTS)
-      }
-
-      if (password !== confirmPassword) {
-        return this.handleResponse(
-          HttpStatusCode.BAD_REQUEST,
-          false,
-          USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD
-        )
-      }
-      const hashedPassword = this.hashPassword(password)
-      const user = await db.User.create({
-        email,
-        name,
-        username: name.toLowerCase().replace(/\s+/g, ''),
-        date_of_birth,
-        password: hashedPassword,
-        confirmPassword: hashedPassword
-      })
-
-      const token = generateToken(user.id)
-      this.setTokenCookie(res, token)
-
-      return this.handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token })
-    } catch (error: any) {
-      throw new Error(error.message)
+    if (userExists) {
+      return this.handleResponse(HttpStatusCode.CONFLICT, false, USERS_MESSAGES.EMAIL_ALREADY_EXISTS)
     }
+
+    if (password !== confirmPassword) {
+      return this.handleResponse(
+        HttpStatusCode.BAD_REQUEST,
+        false,
+        USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD
+      )
+    }
+    const hashedPassword = this.hashPassword(password)
+    const user = await db.User.create({
+      email,
+      name,
+      username: name.toLowerCase().replace(/\s+/g, ''),
+      date_of_birth,
+      password: hashedPassword,
+      confirmPassword: hashedPassword
+    })
+
+    const token = generateToken(user.id)
+    this.setTokenCookie(res, token)
+
+    const refreshToken = generateToken(user.id, '7d')
+    await db.RefreshToken.create({ token: refreshToken, user_id: user.id })
+
+    return this.handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token, refreshToken })
+  }
+
+  async refreshToken({ body }: { body: { refreshToken: string } }, res: any) {
+    const { refreshToken } = body
+
+    const storedToken = await db.RefreshToken.findOne({ where: { token: refreshToken } })
+    if (!storedToken) {
+      return this.handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.REFRESH_TOKEN_IS_INVALID)
+    }
+
+    const user = await db.User.findOne({ where: { id: storedToken.user_id } })
+    if (!user) {
+      return this.handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    const token = generateToken(user.id)
+    this.setTokenCookie(res, token)
+
+    return this.handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.TOKEN_REFRESHED, { token })
   }
 }
 
