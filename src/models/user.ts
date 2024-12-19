@@ -18,6 +18,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       User.hasMany(models.Follower, { foreignKey: 'followed_user_id' })
     }
   }
+
   User.init(
     {
       name: DataTypes.STRING,
