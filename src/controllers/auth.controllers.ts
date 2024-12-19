@@ -1,34 +1,34 @@
 import { Request, Response } from 'express'
+import { USERS_MESSAGES } from '~/constants/messages'
 import authService from '~/services/auth.service'
-import asyncHandler from '~/middlewares/asyncHandler'
 import { sendResponse } from '~/utils/response'
 
 class AuthController {
-  login = asyncHandler(async (req: Request, res: Response) => {
+  async login(req: Request, res: Response) {
     const response = await authService.login({ body: req.body }, res)
-    return sendResponse(res, response.statusCode, {
+    sendResponse(res, response.statusCode, {
       success: response.success,
       message: response.message,
       data: response.data
     })
-  })
+  }
 
-  register = asyncHandler(async (req: Request, res: Response) => {
+  async register(req: Request, res: Response) {
     const response = await authService.register({ body: req.body }, res)
-    return sendResponse(res, response.statusCode, {
+    sendResponse(res, response.statusCode, {
       success: response.success,
       message: response.message,
       data: response.data
     })
-  })
+  }
 
-  logout = asyncHandler(async (req: Request, res: Response) => {
+  async logout(req: Request, res: Response) {
     res.clearCookie('token')
-    return sendResponse(res, 200, {
+    sendResponse(res, 200, {
       success: true,
-      message: 'Logout successfully'
+      message: USERS_MESSAGES.LOGOUT_SUCCESS
     })
-  })
+  }
 }
 
 const authController = new AuthController()
