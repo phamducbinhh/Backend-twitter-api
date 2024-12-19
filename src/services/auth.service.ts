@@ -3,6 +3,7 @@ import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { LoginUserData } from '~/schema/user/login.schema'
 import { RegisterUserData } from '~/schema/user/register.schema'
+import { throwError } from '~/utils/errorResponse'
 import generateToken from '~/utils/jwt'
 const db = require('../models')
 
@@ -23,72 +24,65 @@ class AuthServices {
     })
   }
 
-  private handleResponse(statusCode: number, success: boolean, message: string, data: any = null) {
-    return { statusCode, success, message, ...(data && { data }) }
-  }
-
   async login({ body }: { body: LoginUserData }, res: any) {
     const { email, password } = body
 
     if (!email) {
-      return this.handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.EMAIL_IS_REQUIRED)
+      throwError(USERS_MESSAGES.EMAIL_IS_REQUIRED, HttpStatusCode.BAD_REQUEST)
     }
 
-    try {
-      const user = await db.User.findOne({ where: { email } })
+    const user = await db.User.findOne({ where: { email } })
 
-      if (!user) {
-        return this.handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.EMAIL_INCORRECT)
-      }
+    if (!user) {
+      throwError(USERS_MESSAGES.EMAIL_INCORRECT, HttpStatusCode.NOT_FOUND)
+    }
 
-      if (!this.comparePassword(password, user.password)) {
-        return this.handleResponse(HttpStatusCode.UNAUTHORIZED, false, USERS_MESSAGES.PASSWORD_IS_INCORRECT)
-      }
+    if (!this.comparePassword(password, user.password)) {
+      throwError(USERS_MESSAGES.PASSWORD_IS_INCORRECT, HttpStatusCode.UNAUTHORIZED)
+    }
 
-      const token = generateToken(user.id)
-      this.setTokenCookie(res, token)
+    const token = generateToken(user.id)
+    this.setTokenCookie(res, token)
 
-      return this.handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.LOGIN_SUCCESS, { token })
-    } catch (error: any) {
-      throw new Error(error.message)
+    return {
+      success: true,
+      message: USERS_MESSAGES.LOGIN_SUCCESS,
+      data: { token }
     }
   }
 
   async register({ body }: { body: RegisterUserData }, res: any) {
     const { email, password, confirmPassword, name, date_of_birth } = body
 
-    try {
-      const userExists = await db.User.findOne({
-        where: { [db.Sequelize.Op.or]: [{ email }] }
-      })
+    const userExists = await db.User.findOne({
+      where: { [db.Sequelize.Op.or]: [{ email }] }
+    })
 
-      if (userExists) {
-        return this.handleResponse(HttpStatusCode.CONFLICT, false, USERS_MESSAGES.EMAIL_ALREADY_EXISTS)
-      }
+    if (userExists) {
+      throwError(USERS_MESSAGES.EMAIL_ALREADY_EXISTS, HttpStatusCode.CONFLICT)
+    }
 
-      if (password !== confirmPassword) {
-        return this.handleResponse(
-          HttpStatusCode.BAD_REQUEST,
-          false,
-          USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD
-        )
-      }
-      const hashedPassword = this.hashPassword(password)
-      const user = await db.User.create({
-        email,
-        name,
-        username: name.toLowerCase().replace(/\s+/g, ''),
-        date_of_birth,
-        password: hashedPassword,
-        confirmPassword: hashedPassword
-      })
+    if (password !== confirmPassword) {
+      throwError(USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD, HttpStatusCode.BAD_REQUEST)
+    }
 
-      const token = generateToken(user.id)
-      this.setTokenCookie(res, token)
+    const hashedPassword = this.hashPassword(password)
+    const user = await db.User.create({
+      email,
+      name,
+      username: name.toLowerCase().replace(/\s+/g, ''),
+      date_of_birth,
+      password: hashedPassword,
+      confirmPassword: hashedPassword
+    })
 
-      return this.handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token })
-    } catch (error: any) {
-      throw new Error(error.message)
+    const token = generateToken(user.id)
+    this.setTokenCookie(res, token)
+
+    return {
+      success: true,
+      message: USERS_MESSAGES.REGISTER_SUCCESS,
+      data: { token }
     }
   }
 }
