@@ -4,9 +4,9 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { LoginReqBody, RefreshTokenReqBody, RegisterReqBody } from '~/types/users.type'
 import { comparePassword, hashPassword } from '~/utils/bcrypt'
 import { setTokenCookie } from '~/utils/cookies'
-import generateToken from '~/utils/jwt'
 import { handleResponse } from '~/utils/response'
 import refreshTokenService from './refreshToken.service'
+import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
 const db = require('../models')
 
 class AuthServices {
@@ -27,10 +27,10 @@ class AuthServices {
       return handleResponse(HttpStatusCode.UNAUTHORIZED, false, USERS_MESSAGES.PASSWORD_IS_INCORRECT)
     }
 
-    const token = generateToken(user.id)
+    const token = generateAccessToken(user.id)
     setTokenCookie(res, token)
 
-    const refreshToken = generateToken(user.id, envConfig.refreshTokenExpiresIn as string)
+    const refreshToken = generateRefreshToken(user.id, envConfig.refreshTokenExpiresIn as string)
     await refreshTokenService.createRefreshToken(user.id, refreshToken)
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.LOGIN_SUCCESS, { token, refreshToken })
@@ -64,10 +64,10 @@ class AuthServices {
       confirm_password: hashedPassword
     })
 
-    const token = generateToken(user.id)
+    const token = generateAccessToken(user.id)
     setTokenCookie(res, token)
 
-    const refreshToken = generateToken(user.id, envConfig.refreshTokenExpiresIn as string)
+    const refreshToken = generateRefreshToken(user.id, envConfig.refreshTokenExpiresIn as string)
     await refreshTokenService.createRefreshToken(user.id, refreshToken)
 
     return handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token, refreshToken })
@@ -86,7 +86,7 @@ class AuthServices {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
     }
 
-    const token = generateToken(user.id)
+    const token = generateAccessToken(user.id)
     setTokenCookie(res, token)
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.TOKEN_REFRESHED, { token })
