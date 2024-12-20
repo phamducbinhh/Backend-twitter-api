@@ -1,23 +1,15 @@
-import bcrypt from 'bcrypt'
 import { Request } from 'express'
 import { body, Result, ValidationError, validationResult } from 'express-validator'
-
-export interface LoginUserData {
-  email?: string
-  password: string
-}
+import { LoginReqBody } from '~/types/users.type'
+import { hashPassword } from '~/utils/bcrypt'
 
 export class LoginUserSchema {
   email?: string
   password: string
 
-  constructor(data: LoginUserData) {
+  constructor(data: LoginReqBody) {
     this.email = data.email
-    this.password = this.hashPassword(data.password)
-  }
-
-  private hashPassword(password: string): string {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(12))
+    this.password = hashPassword(data.password)
   }
 
   static validationRules() {
