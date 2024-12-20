@@ -4,9 +4,9 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { LoginReqBody, RefreshTokenReqBody, RegisterReqBody } from '~/types/users.type'
 import { comparePassword, hashPassword } from '~/utils/bcrypt'
 import { setTokenCookie } from '~/utils/cookies'
+import { generateAccessToken, generateEmailVerifyToken, generateRefreshToken } from '~/utils/jwt'
 import { handleResponse } from '~/utils/response'
 import refreshTokenService from './refreshToken.service'
-import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
 const db = require('../models')
 
 class AuthServices {
@@ -69,6 +69,10 @@ class AuthServices {
 
     const refreshToken = generateRefreshToken(user.id, envConfig.refreshTokenExpiresIn as string)
     await refreshTokenService.createRefreshToken(user.id, refreshToken)
+
+    // Generate email verification token
+    const emailVerifyToken = generateEmailVerifyToken(user.id)
+    await db.User.update({ email_verify_token: emailVerifyToken }, { where: { id: user.id } })
 
     return handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token, refreshToken })
   }

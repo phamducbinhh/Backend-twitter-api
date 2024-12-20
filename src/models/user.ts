@@ -30,6 +30,10 @@ module.exports = (sequelize: any, DataTypes: any) => {
       bio: DataTypes.TEXT,
       location: DataTypes.STRING,
       website: DataTypes.STRING,
+      verify_status: {
+        type: DataTypes.ENUM('Unverified', 'Verified', 'Banned'),
+        defaultValue: 'Unverified'
+      },
       username: DataTypes.STRING,
       cover_photo: DataTypes.STRING
     },

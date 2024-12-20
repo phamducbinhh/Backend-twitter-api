@@ -11,3 +11,13 @@ export const generateRefreshToken = (id: string | number, expiresIn?: string) =>
     expiresIn: expiresIn || (envConfig.refreshTokenExpiresIn as string)
   })
 }
+export const generateEmailVerifyToken = (id: string | number, expiresIn?: string) => {
+  return jwt.sign({ id }, envConfig.jwtSecretEmailVerifyToken as string, {
+    expiresIn: expiresIn || (envConfig.emailVerifyTokenExpiresIn as string)
+  })
+}
+export const generateForgotPasswordToken = (id: string | number, expiresIn?: string) => {
+  return jwt.sign({ id }, envConfig.jwtSecretForgotPasswordToken as string, {
+    expiresIn: expiresIn || (envConfig.forgotPasswordTokenExpiresIn as string)
+  })
+}
