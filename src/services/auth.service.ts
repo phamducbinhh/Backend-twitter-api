@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
-import { LoginUserData } from '~/schema/user/login.schema'
-import { RegisterUserData } from '~/schema/user/register.schema'
+import { LoginReqBody, RefreshTokenReqBody, RegisterReqBody } from '~/types/users.type'
 import generateToken from '~/utils/jwt'
 const db = require('../models')
 
@@ -27,7 +26,7 @@ class AuthServices {
     return { statusCode, success, message, ...(data && { data }) }
   }
 
-  async login({ body }: { body: LoginUserData }, res: any) {
+  async login({ body }: { body: LoginReqBody }, res: any) {
     const { email, password } = body
 
     if (!email) {
@@ -53,8 +52,8 @@ class AuthServices {
     return this.handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.LOGIN_SUCCESS, { token, refreshToken })
   }
 
-  async register({ body }: { body: RegisterUserData }, res: any) {
-    const { email, password, confirmPassword, name, date_of_birth } = body
+  async register({ body }: { body: RegisterReqBody }, res: any) {
+    const { email, password, confirm_password, name, date_of_birth } = body
 
     const userExists = await db.User.findOne({
       where: { [db.Sequelize.Op.or]: [{ email }] }
@@ -64,7 +63,7 @@ class AuthServices {
       return this.handleResponse(HttpStatusCode.CONFLICT, false, USERS_MESSAGES.EMAIL_ALREADY_EXISTS)
     }
 
-    if (password !== confirmPassword) {
+    if (password !== confirm_password) {
       return this.handleResponse(
         HttpStatusCode.BAD_REQUEST,
         false,
@@ -78,7 +77,7 @@ class AuthServices {
       username: name.toLowerCase().replace(/\s+/g, ''),
       date_of_birth,
       password: hashedPassword,
-      confirmPassword: hashedPassword
+      confirm_password: hashedPassword
     })
 
     const token = generateToken(user.id)
@@ -90,10 +89,10 @@ class AuthServices {
     return this.handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token, refreshToken })
   }
 
-  async refreshToken({ body }: { body: { refreshToken: string } }, res: any) {
-    const { refreshToken } = body
+  async refreshToken({ body }: { body: RefreshTokenReqBody }, res: any) {
+    const { refresh_token } = body
 
-    const storedToken = await db.RefreshToken.findOne({ where: { token: refreshToken } })
+    const storedToken = await db.RefreshToken.findOne({ where: { token: refresh_token } })
     if (!storedToken) {
       return this.handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.REFRESH_TOKEN_IS_INVALID)
     }

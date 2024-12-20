@@ -14,3 +14,20 @@ export interface UserType {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface LoginReqBody {
+  email: string
+  password: string
+}
+
+export interface RegisterReqBody {
+  name: string
+  email: string
+  password: string
+  confirm_password: string
+  date_of_birth: string
+}
+
+export interface RefreshTokenReqBody {
+  refresh_token: string
+}
