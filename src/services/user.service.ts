@@ -2,6 +2,7 @@ import { UserVerifyStatus } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { VerifyEmailReqBody } from '~/types/users.type'
+import { generateEmailVerifyToken } from '~/utils/jwt'
 import { handleResponse } from '~/utils/response'
 
 const db = require('../models')
@@ -30,6 +31,20 @@ class UserServices {
     )
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.EMAIL_VERIFY_SUCCESS)
+  }
+  async resendVerifyEmail({ id }: { id: string }) {
+    const emailVerifyToken = generateEmailVerifyToken(id)
+
+    await db.User.update(
+      {
+        email_verify_token: emailVerifyToken
+      },
+      {
+        where: { id }
+      }
+    )
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS)
   }
 }
 

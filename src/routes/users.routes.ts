@@ -6,4 +6,6 @@ const router = express.Router()
 
 router.post('/verify-email', verifyToken, asyncHandler(userController.verifyEmail))
 
+router.post('/resend-verify-email', verifyToken, asyncHandler(userController.resendVerifyEmail))
+
 export default router

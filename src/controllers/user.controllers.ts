@@ -11,6 +11,14 @@ class UserController {
       message: response.message
     })
   }
+
+  async resendVerifyEmail(req: { user: { id: string } } | any, res: Response) {
+    const response = await userService.resendVerifyEmail({ id: req.user?.id })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message
+    })
+  }
 }
 
 const userController = new UserController()
