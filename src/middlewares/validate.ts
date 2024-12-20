@@ -1,11 +1,16 @@
-export const validate = (requestType: any) => {
-  return (req: any, res: any, next: any) => {
-    const { error } = requestType.validate(req.body)
+import { validationResult } from 'express-validator'
 
-    if (error) {
+export const validate = (requestType: any) => {
+  return async (req: any, res: any, next: any) => {
+    await Promise.all(requestType.validationRules().map((validation: any) => validation.run(req)))
+
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: error.details[0]?.message
+        message: 'Validation failed',
+        errors: errors.array().map((error) => error.msg)
       })
     }
 

@@ -1,51 +1,96 @@
-import { Request } from 'express'
-import { body, Result, ValidationError, validationResult } from 'express-validator'
-import { RegisterReqBody } from '~/types/users.type'
-import { hashPassword } from '~/utils/bcrypt'
+import { checkSchema, validationResult } from 'express-validator'
+import { USERS_MESSAGES } from '~/constants/messages'
 
 export class RegisterUserSchema {
-  name: string
-  email: string
-  password: string
-  confirm_password: string
-  date_of_birth: string
-
-  constructor(data: RegisterReqBody) {
-    this.name = data.name
-    this.email = data.email
-    this.password = hashPassword(data.password)
-    this.confirm_password = data.confirm_password
-    this.date_of_birth = data.date_of_birth
-  }
-
   static validationRules() {
-    return [
-      body('name').notEmpty().withMessage('Name là bắt buộc').isString().withMessage('Name phải là chuỗi'),
-
-      body('email').notEmpty().withMessage('Email là bắt buộc').isEmail().withMessage('Email không hợp lệ'),
-
-      body('password')
-        .notEmpty()
-        .withMessage('Password là bắt buộc')
-        .isLength({ min: 6 })
-        .withMessage('Password phải có ít nhất 6 ký tự'),
-
-      body('confirm_password')
-        .notEmpty()
-        .withMessage('Confirm Password là bắt buộc')
-        .custom((value, { req }) => value === req.body.password)
-        .withMessage('Confirm Password phải khớp với Password'),
-
-      body('date_of_birth')
-        .notEmpty()
-        .withMessage('Date of Birth là bắt buộc')
-        .isISO8601()
-        .withMessage('Date of Birth phải đúng định dạng ISO8601')
-    ]
+    return checkSchema({
+      name: {
+        trim: true,
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.NAME_IS_REQUIRED
+        },
+        isString: {
+          errorMessage: USERS_MESSAGES.NAME_MUST_BE_A_STRING
+        }
+      },
+      email: {
+        trim: true,
+        isEmail: {
+          errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
+        }
+      },
+      password: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
+        },
+        isString: {
+          errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 6,
+            max: 50
+          },
+          errorMessage: USERS_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
+        },
+        isStrongPassword: {
+          options: {
+            minLength: 6,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1
+          },
+          errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_STRONG
+        }
+      },
+      confirm_password: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
+        },
+        isString: {
+          errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 6,
+            max: 50
+          },
+          errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
+        },
+        isStrongPassword: {
+          options: {
+            minLength: 6,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1
+          },
+          errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_STRONG
+        },
+        custom: {
+          options: (value, { req }) => {
+            if (value !== req.body.password) {
+              throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD)
+            }
+            return true
+          }
+        }
+      },
+      date_of_birth: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_MUST_BE_ISO8601
+        }
+      }
+    })
   }
 
-  static validate(req: Request): { isValid: boolean; errors: ValidationError[] } {
-    const errors: Result<ValidationError> = validationResult(req)
+  static validate(req: any): { isValid: boolean; errors: any[] } {
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return {
         isValid: false,

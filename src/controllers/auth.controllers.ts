@@ -34,7 +34,7 @@ class AuthController {
     })
   }
 
-  async logout(req: Request & { user: { id: number } }, res: Response) {
+  async logout(req: Request | (any & { user: { id: number } }), res: Response) {
     const { id } = req.user
     await refreshTokenService.deleteRefreshTokensByUserId(id)
 

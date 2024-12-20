@@ -1,30 +1,45 @@
-import { Request } from 'express'
-import { body, Result, ValidationError, validationResult } from 'express-validator'
-import { LoginReqBody } from '~/types/users.type'
-import { hashPassword } from '~/utils/bcrypt'
+import { checkSchema, validationResult } from 'express-validator'
+import { USERS_MESSAGES } from '~/constants/messages'
 
 export class LoginUserSchema {
-  email?: string
-  password: string
-
-  constructor(data: LoginReqBody) {
-    this.email = data.email
-    this.password = hashPassword(data.password)
-  }
-
   static validationRules() {
-    return [
-      body('email').optional().isEmail().withMessage('Email không hợp lệ'),
-      body('password')
-        .isLength({ min: 6 })
-        .withMessage('Password phải có ít nhất 6 ký tự')
-        .notEmpty()
-        .withMessage('Password là bắt buộc')
-    ]
+    return checkSchema({
+      email: {
+        trim: true,
+        isEmail: {
+          errorMessage: USERS_MESSAGES.EMAIL_IS_INVALID
+        }
+      },
+      password: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
+        },
+        isLength: {
+          options: {
+            min: 6,
+            max: 50
+          },
+          errorMessage: USERS_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
+        },
+        isString: {
+          errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
+        },
+        isStrongPassword: {
+          options: {
+            minLength: 6,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1
+          },
+          errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_STRONG
+        }
+      }
+    })
   }
 
-  static validate(req: Request): { isValid: boolean; errors: ValidationError[] } {
-    const errors: Result<ValidationError> = validationResult(req)
+  static validate(req: any): { isValid: boolean; errors: any[] } {
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return {
         isValid: false,
