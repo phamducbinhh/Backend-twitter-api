@@ -1,7 +1,8 @@
 import { UserVerifyStatus } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
-import { ForgotPasswordReqBody, VerifyEmailReqBody } from '~/types/users.type'
+import { ForgotPasswordReqBody, ResetPasswordReqBody, VerifyEmailReqBody } from '~/types/users.type'
+import { hashPassword } from '~/utils/bcrypt'
 import { generateEmailVerifyToken, generateForgotPasswordToken } from '~/utils/jwt'
 import { handleResponse } from '~/utils/response'
 
@@ -67,6 +68,30 @@ class UserServices {
     )
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD)
+  }
+
+  async resetPassword({ body }: { body: ResetPasswordReqBody }) {
+    const { forgot_password_token, password, confirm_password } = body
+
+    const user = await db.User.findOne({ where: { forgot_password_token } })
+
+    if (!user) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    if (password !== confirm_password) {
+      return handleResponse(
+        HttpStatusCode.BAD_REQUEST,
+        false,
+        USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD
+      )
+    }
+
+    const hashedPassword = hashPassword(password)
+
+    await db.User.update({ password: hashedPassword, forgot_password_token: null }, { where: { id: user.id } })
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.RESET_PASSWORD_SUCCESS)
   }
 }
 

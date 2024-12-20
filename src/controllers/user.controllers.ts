@@ -27,6 +27,14 @@ class UserController {
       message: response.message
     })
   }
+
+  async resetPassword(req: any, res: Response) {
+    const response = await userService.resetPassword({ body: req.body })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message
+    })
+  }
 }
 
 const userController = new UserController()
