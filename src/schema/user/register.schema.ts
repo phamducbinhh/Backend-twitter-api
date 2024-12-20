@@ -1,4 +1,4 @@
-import { checkSchema, validationResult } from 'express-validator'
+import { checkSchema } from 'express-validator'
 import { USERS_MESSAGES } from '~/constants/messages'
 
 export class RegisterUserSchema {
@@ -87,16 +87,5 @@ export class RegisterUserSchema {
         }
       }
     })
-  }
-
-  static validate(req: any): { isValid: boolean; errors: any[] } {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return {
-        isValid: false,
-        errors: errors.array()
-      }
-    }
-    return { isValid: true, errors: [] }
   }
 }
