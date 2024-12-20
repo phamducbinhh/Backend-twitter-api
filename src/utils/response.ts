@@ -16,3 +16,7 @@ export const sendResponse = (
 
   return res.status(statusCode).json(responseBody)
 }
+
+export const handleResponse = (statusCode: number, success: boolean, message: string, data: any = null) => {
+  return { statusCode, success, message, ...(data && { data }) }
+}
