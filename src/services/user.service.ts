@@ -46,7 +46,6 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS)
   }
-
   async forgotPassword({ body }: { body: ForgotPasswordReqBody }) {
     const { email: userEmail } = body
 
