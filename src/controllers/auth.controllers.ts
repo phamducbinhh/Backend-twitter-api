@@ -2,9 +2,9 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { USERS_MESSAGES } from '~/constants/messages'
 import authService from '~/services/auth.service'
+import refreshTokenService from '~/services/refreshToken.service'
 import { LoginReqBody, RefreshTokenReqBody, RegisterReqBody } from '~/types/users.type'
 import { sendResponse } from '~/utils/response'
-const db = require('../models')
 
 class AuthController {
   async login(req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) {
@@ -36,9 +36,7 @@ class AuthController {
 
   async logout(req: Request & { user: { id: number } }, res: Response) {
     const { id } = req.user
-    await db.RefreshToken.destroy({
-      where: { user_id: id }
-    })
+    await refreshTokenService.deleteRefreshTokensByUserId(id)
 
     res.clearCookie('token')
     sendResponse(res, 200, {

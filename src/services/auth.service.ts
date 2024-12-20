@@ -6,6 +6,7 @@ import { comparePassword, hashPassword } from '~/utils/bcrypt'
 import { setTokenCookie } from '~/utils/cookies'
 import generateToken from '~/utils/jwt'
 import { handleResponse } from '~/utils/response'
+import refreshTokenService from './refreshToken.service'
 const db = require('../models')
 
 class AuthServices {
@@ -29,8 +30,8 @@ class AuthServices {
     const token = generateToken(user.id)
     setTokenCookie(res, token)
 
-    const refreshToken = generateToken(user.id, '7d')
-    await db.RefreshToken.create({ token: refreshToken, user_id: user.id })
+    const refreshToken = generateToken(user.id, envConfig.refreshTokenExpiresIn as string)
+    await refreshTokenService.createRefreshToken(user.id, refreshToken)
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.LOGIN_SUCCESS, { token, refreshToken })
   }
@@ -67,7 +68,7 @@ class AuthServices {
     setTokenCookie(res, token)
 
     const refreshToken = generateToken(user.id, envConfig.refreshTokenExpiresIn as string)
-    await db.RefreshToken.create({ token: refreshToken, user_id: user.id })
+    await refreshTokenService.createRefreshToken(user.id, refreshToken)
 
     return handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token, refreshToken })
   }
