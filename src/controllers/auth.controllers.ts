@@ -34,7 +34,7 @@ class AuthController {
     })
   }
 
-  async logout(req: Request | any, res: Response) {
+  async logout(req: Request & { user: { id: number } }, res: Response) {
     const { id } = req.user
     await db.RefreshToken.destroy({
       where: { user_id: id }
