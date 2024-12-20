@@ -8,4 +8,6 @@ router.post('/verify-email', verifyToken, asyncHandler(userController.verifyEmai
 
 router.post('/resend-verify-email', verifyToken, asyncHandler(userController.resendVerifyEmail))
 
+router.post('/forgot-password', asyncHandler(userController.forgotPassword))
+
 export default router

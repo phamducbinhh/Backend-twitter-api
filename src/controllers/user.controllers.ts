@@ -19,6 +19,14 @@ class UserController {
       message: response.message
     })
   }
+
+  async forgotPassword(req: any, res: Response) {
+    const response = await userService.forgotPassword({ body: req.body })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message
+    })
+  }
 }
 
 const userController = new UserController()

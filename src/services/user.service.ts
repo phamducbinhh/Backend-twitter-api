@@ -1,8 +1,8 @@
 import { UserVerifyStatus } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
-import { VerifyEmailReqBody } from '~/types/users.type'
-import { generateEmailVerifyToken } from '~/utils/jwt'
+import { ForgotPasswordReqBody, VerifyEmailReqBody } from '~/types/users.type'
+import { generateEmailVerifyToken, generateForgotPasswordToken } from '~/utils/jwt'
 import { handleResponse } from '~/utils/response'
 
 const db = require('../models')
@@ -45,6 +45,29 @@ class UserServices {
     )
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS)
+  }
+
+  async forgotPassword({ body }: { body: ForgotPasswordReqBody }) {
+    const { email: userEmail } = body
+
+    const user = await db.User.findOne({ where: { email: userEmail } })
+
+    if (!user) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    const forgotPasswordToken = generateForgotPasswordToken(user.id)
+
+    await db.User.update(
+      {
+        forgot_password_token: forgotPasswordToken
+      },
+      {
+        where: { id: user.id }
+      }
+    )
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD)
   }
 }
 
