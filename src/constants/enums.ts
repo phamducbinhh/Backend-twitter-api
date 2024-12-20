@@ -5,10 +5,10 @@ export enum UserVerifyStatus {
 }
 
 export enum TokenType {
-  AccessToken,
-  RefreshToken,
-  ForgotPasswordToken,
-  EmailVerifyToken
+  AccessToken = 'access',
+  RefreshToken = 'refresh',
+  ForgotPasswordToken = 'forgot_password',
+  EmailVerifyToken = 'email_verify'
 }
 
 export enum MediaType {

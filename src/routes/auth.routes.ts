@@ -1,4 +1,5 @@
 import express from 'express'
+import { TokenType } from '~/constants/enums'
 import authController from '~/controllers/auth.controllers'
 import asyncHandler from '~/middlewares/asyncHandler'
 import { verifyToken } from '~/middlewares/jwtMiddleware'
@@ -11,8 +12,8 @@ router.post('/register', validate(RegisterUserSchema), asyncHandler(authControll
 
 router.post('/login', validate(LoginUserSchema), asyncHandler(authController.login))
 
-router.post('/logout', verifyToken, asyncHandler(authController.logout))
+router.post('/logout', verifyToken(TokenType.AccessToken), asyncHandler(authController.logout))
 
-router.post('/refresh-token', verifyToken, asyncHandler(authController.refreshToken))
+router.post('/refresh-token', verifyToken(TokenType.AccessToken), asyncHandler(authController.refreshToken))
 
 export default router
