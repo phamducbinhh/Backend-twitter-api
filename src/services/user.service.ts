@@ -69,7 +69,6 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD)
   }
-
   async resetPassword({ body }: { body: ResetPasswordReqBody }) {
     const { forgot_password_token, password, confirm_password } = body
 
