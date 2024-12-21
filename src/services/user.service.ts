@@ -92,6 +92,20 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.RESET_PASSWORD_SUCCESS)
   }
+  async getmetProfile({ id }: { id: string }) {
+    const user = await db.User.findOne({
+      where: { id },
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt']
+      }
+    })
+
+    if (!user) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_PROFILE_SUCCESS, user)
+  }
 }
 
 export default new UserServices()

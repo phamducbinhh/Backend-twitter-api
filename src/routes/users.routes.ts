@@ -27,4 +27,6 @@ router.post(
   asyncHandler(userController.resetPassword)
 )
 
+router.get('/profile', verifyToken(TokenType.AccessToken), asyncHandler(userController.getmetProfile))
+
 export default router

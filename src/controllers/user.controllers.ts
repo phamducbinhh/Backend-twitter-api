@@ -35,6 +35,15 @@ class UserController {
       message: response.message
     })
   }
+
+  async getmetProfile(req: { user: { id: string } } | any, res: Response) {
+    const response = await userService.getmetProfile({ id: req.user?.id })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message,
+      data: response.data
+    })
+  }
 }
 
 const userController = new UserController()
