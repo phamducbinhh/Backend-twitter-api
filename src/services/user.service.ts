@@ -96,7 +96,7 @@ class UserServices {
     const user = await db.User.findOne({
       where: { id },
       attributes: {
-        exclude: ['password', 'createdAt', 'updatedAt']
+        exclude: ['password', 'createdAt', 'updatedAt', 'email_verify_token', 'forgot_password_token']
       }
     })
 
