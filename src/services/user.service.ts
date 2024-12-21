@@ -24,7 +24,7 @@ class UserServices {
     await db.User.update(
       {
         email_verify_token: null,
-        verify_status: 'Verified'
+        verify_status: UserVerifyStatus.Verified
       },
       {
         where: { id }
