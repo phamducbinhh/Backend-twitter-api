@@ -109,3 +109,6 @@ CREATE TABLE mentions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE(tweet_id, user_id)
 );
+
+ALTER TABLE users
+ADD COLUMN avatar VARCHAR(255);
