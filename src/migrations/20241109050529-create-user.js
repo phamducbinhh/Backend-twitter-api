@@ -41,8 +41,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       verify_status: {
-        type: Sequelize.ENUM('Unverified', 'Verified', 'Banned'),
-        defaultValue: 'Unverified'
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0 // Unverified
       },
       username: {
         type: Sequelize.STRING,

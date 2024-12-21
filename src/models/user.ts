@@ -31,8 +31,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
       location: DataTypes.STRING,
       website: DataTypes.STRING,
       verify_status: {
-        type: DataTypes.ENUM('Unverified', 'Verified', 'Banned'),
-        defaultValue: 'Unverified'
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
       },
       username: DataTypes.STRING,
       cover_photo: DataTypes.STRING

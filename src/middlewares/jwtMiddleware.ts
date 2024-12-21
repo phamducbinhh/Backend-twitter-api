@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
 import { envConfig } from '~/constants/config'
-import { TokenType } from '~/constants/enums'
+import { TokenType, UserVerifyStatus } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
+import { TokenPayload } from '~/types/users.type'
 
 export const verifyToken = (tokenType: TokenType) => (req: any, res: any, next: any) => {
   const tokenMap = {
@@ -45,4 +46,15 @@ export const verifyToken = (tokenType: TokenType) => (req: any, res: any, next: 
       message: error.message
     })
   }
+}
+
+export const verifiedUserValidator = (req: any, res: any, next: any) => {
+  const { verify_status } = req.user as TokenPayload
+  if (verify_status !== UserVerifyStatus.Verified) {
+    return res.status(HttpStatusCode.FORBIDEN).json({
+      success: false,
+      message: USERS_MESSAGES.USER_NOT_VERIFIED
+    })
+  }
+  next()
 }
