@@ -2,7 +2,7 @@ import express from 'express'
 import { TokenType } from '~/constants/enums'
 import userController from '~/controllers/user.controllers'
 import asyncHandler from '~/middlewares/asyncHandler'
-import { verifiedUserValidator, verifyToken } from '~/middlewares/jwtMiddleware'
+import { verifyToken } from '~/middlewares/jwtMiddleware'
 import { validate } from '~/middlewares/validate'
 import { ForgotPasswordSchema } from '~/schema/user/forgot-password'
 import { ResetPasswordSchema } from '~/schema/user/reset-password'
@@ -27,11 +27,6 @@ router.post(
   asyncHandler(userController.resetPassword)
 )
 
-router.get(
-  '/profile',
-  verifyToken(TokenType.AccessToken),
-  verifiedUserValidator,
-  asyncHandler(userController.getmetProfile)
-)
+router.get('/profile', verifyToken(TokenType.AccessToken), asyncHandler(userController.getmetProfile))
 
 export default router
