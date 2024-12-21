@@ -106,6 +106,18 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_PROFILE_SUCCESS, user)
   }
+
+  async updateProfile({ id, body }: { id: string; body: any }) {
+    const user = await db.User.findOne({ where: { id } })
+
+    if (!user) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    const updatedUser = await db.User.update(body, { where: { id } })
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPDATE_ME_SUCCESS, updatedUser)
+  }
 }
 
 export default new UserServices()

@@ -55,3 +55,14 @@ export interface TokenPayload extends JwtPayload {
   exp: number
   iat: number
 }
+
+export interface UpdateMeReqBody {
+  name?: string
+  date_of_birth?: string
+  bio?: string
+  location?: string
+  website?: string
+  username?: string
+  avatar?: string
+  cover_photo?: string
+}

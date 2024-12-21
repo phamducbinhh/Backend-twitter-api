@@ -2,10 +2,11 @@ import express from 'express'
 import { TokenType } from '~/constants/enums'
 import userController from '~/controllers/user.controllers'
 import asyncHandler from '~/middlewares/asyncHandler'
-import { verifyToken } from '~/middlewares/jwtMiddleware'
+import { verifiedUserValidator, verifyToken } from '~/middlewares/jwtMiddleware'
 import { validate } from '~/middlewares/validate'
 import { ForgotPasswordSchema } from '~/schema/user/forgot-password'
 import { ResetPasswordSchema } from '~/schema/user/reset-password'
+import { UpdateProfileSchema } from '~/schema/user/update-profile'
 import { VerifyEmailSchema } from '~/schema/user/verify-email'
 const router = express.Router()
 
@@ -28,5 +29,13 @@ router.post(
 )
 
 router.get('/profile', verifyToken(TokenType.AccessToken), asyncHandler(userController.getmetProfile))
+
+router.patch(
+  '/profile',
+  verifyToken(TokenType.AccessToken),
+  verifiedUserValidator,
+  validate(UpdateProfileSchema),
+  asyncHandler(userController.updateProfile)
+)
 
 export default router

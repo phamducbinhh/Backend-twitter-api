@@ -44,6 +44,14 @@ class UserController {
       data: response.data
     })
   }
+
+  async updateProfile(req: { user: { id: string }; body: any } | any, res: Response) {
+    const response = await userService.updateProfile({ id: req.user?.id, body: req.body })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message
+    })
+  }
 }
 
 const userController = new UserController()
