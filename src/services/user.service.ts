@@ -107,7 +107,6 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_PROFILE_SUCCESS, user)
   }
-
   async updateProfile({ id, body }: { id: string; body: any }) {
     const user = await db.User.findByPk(id)
 
@@ -120,6 +119,31 @@ class UserServices {
     const response = UserRespone.toResponse(user)
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPDATE_ME_SUCCESS, response)
+  }
+  async getProfile({ username }: { username: string }) {
+    const user = await db.User.findOne({
+      where: { username },
+      attributes: [
+        'id',
+        'name',
+        'email',
+        'bio',
+        'location',
+        'website',
+        'avatar',
+        'username',
+        'cover_photo',
+        'verify_status'
+      ]
+    })
+
+    if (!user) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    const response = UserRespone.toResponse(user)
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_PROFILE_SUCCESS, response)
   }
 }
 

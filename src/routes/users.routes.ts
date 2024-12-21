@@ -32,6 +32,8 @@ router.post(
 
 router.get('/profile', verifyToken(TokenType.AccessToken), asyncHandler(userController.getmetProfile))
 
+router.get('/profile/:username', verifyToken(TokenType.AccessToken), asyncHandler(userController.getProfile))
+
 router.patch(
   '/profile',
   verifyToken(TokenType.AccessToken),
