@@ -108,15 +108,15 @@ class UserServices {
   }
 
   async updateProfile({ id, body }: { id: string; body: any }) {
-    const user = await db.User.findOne({ where: { id } })
+    const user = await db.User.findByPk(id)
 
     if (!user) {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
     }
 
-    const updatedUser = await db.User.update(body, { where: { id } })
+    await user.update(body)
 
-    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPDATE_ME_SUCCESS, updatedUser)
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPDATE_ME_SUCCESS, user)
   }
 }
 
