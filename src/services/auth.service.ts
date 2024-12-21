@@ -1,4 +1,3 @@
-import { envConfig } from '~/constants/config'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { LoginReqBody, RefreshTokenReqBody, RegisterReqBody } from '~/types/users.type'
@@ -27,10 +26,16 @@ class AuthServices {
       return handleResponse(HttpStatusCode.UNAUTHORIZED, false, USERS_MESSAGES.PASSWORD_IS_INCORRECT)
     }
 
-    const token = generateAccessToken(user.id)
+    const token = generateAccessToken({
+      id: user.id,
+      verifyStatus: user.verify_status
+    })
     setTokenCookie(res, token)
 
-    const refreshToken = generateRefreshToken(user.id, envConfig.refreshTokenExpiresIn as string)
+    const refreshToken = generateRefreshToken({
+      id: user.id,
+      verifyStatus: user.verify_status
+    })
     await refreshTokenService.createRefreshToken(user.id, refreshToken)
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.LOGIN_SUCCESS, { token, refreshToken })
@@ -64,10 +69,16 @@ class AuthServices {
       confirm_password: hashedPassword
     })
 
-    const token = generateAccessToken(user.id)
+    const token = generateAccessToken({
+      id: user.id,
+      verifyStatus: user.verify_status
+    })
     setTokenCookie(res, token)
 
-    const refreshToken = generateRefreshToken(user.id, envConfig.refreshTokenExpiresIn as string)
+    const refreshToken = generateRefreshToken({
+      id: user.id,
+      verifyStatus: user.verify_status
+    })
     await refreshTokenService.createRefreshToken(user.id, refreshToken)
 
     // Generate email verification token
@@ -90,7 +101,10 @@ class AuthServices {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
     }
 
-    const token = generateAccessToken(user.id)
+    const token = generateAccessToken({
+      id: user.id,
+      verifyStatus: user.verify_status
+    })
     setTokenCookie(res, token)
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.TOKEN_REFRESHED, { token })

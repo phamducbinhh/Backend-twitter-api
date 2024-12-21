@@ -34,7 +34,7 @@ class UserServices {
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.EMAIL_VERIFY_SUCCESS)
   }
   async resendVerifyEmail({ id }: { id: string }) {
-    const emailVerifyToken = generateEmailVerifyToken(id)
+    const emailVerifyToken = generateEmailVerifyToken({ id })
 
     await db.User.update(
       {
@@ -56,7 +56,7 @@ class UserServices {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
     }
 
-    const forgotPasswordToken = generateForgotPasswordToken(user.id)
+    const forgotPasswordToken = generateForgotPasswordToken({ id: user.id })
 
     await db.User.update(
       {
