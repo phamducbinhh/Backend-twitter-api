@@ -36,7 +36,8 @@ module.exports = (sequelize: any, DataTypes: any) => {
         defaultValue: 0
       },
       username: DataTypes.STRING,
-      cover_photo: DataTypes.STRING
+      cover_photo: DataTypes.STRING,
+      avatar: DataTypes.STRING
     },
     {
       sequelize,
