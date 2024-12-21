@@ -150,11 +150,19 @@ class UserServices {
     if (Number(user_id) === Number(followed_user_id)) {
       return handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.CANNOT_FOLLOW_YOURSELF)
     }
-    const existingFollow = await db.Follower.findOne({ where: { user_id, followed_user_id } })
 
-    if (existingFollow) {
+    // Validate if the followed user exists
+    const isUserExist = await db.User.count({ where: { id: followed_user_id } })
+    if (!isUserExist) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    // Check if the follow relationship already exists
+    const isAlreadyFollowed = await db.Follower.count({ where: { user_id, followed_user_id } })
+    if (isAlreadyFollowed) {
       return handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.ALREADY_FOLLOWED)
     }
+
     // Create a new follow
     await db.Follower.create({ user_id, followed_user_id })
 

@@ -15,8 +15,7 @@ module.exports = {
           model: 'users',
           key: 'id'
         },
-        onDelete: 'SET NULL',
-        unique: true
+        onDelete: 'SET NULL'
       },
       followed_user_id: {
         type: Sequelize.INTEGER,
@@ -24,8 +23,7 @@ module.exports = {
           model: 'users',
           key: 'id'
         },
-        onDelete: 'SET NULL',
-        unique: true
+        onDelete: 'SET NULL'
       },
       createdAt: {
         allowNull: false,
