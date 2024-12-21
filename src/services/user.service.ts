@@ -1,6 +1,7 @@
 import { UserVerifyStatus } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
+import { UserRespone } from '~/response/user'
 import { ForgotPasswordReqBody, ResetPasswordReqBody, VerifyEmailReqBody } from '~/types/users.type'
 import { hashPassword } from '~/utils/bcrypt'
 import { generateEmailVerifyToken, generateForgotPasswordToken } from '~/utils/jwt'
@@ -116,7 +117,9 @@ class UserServices {
 
     await user.update(body)
 
-    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPDATE_ME_SUCCESS, user)
+    const response = UserRespone.toResponse(user)
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPDATE_ME_SUCCESS, response)
   }
 }
 
