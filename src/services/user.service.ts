@@ -145,7 +145,6 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_PROFILE_SUCCESS, response)
   }
-
   async follow({ user_id, followed_user_id }: { user_id: number; followed_user_id: number }) {
     if (Number(user_id) === Number(followed_user_id)) {
       return handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.CANNOT_FOLLOW_YOURSELF)
@@ -167,6 +166,28 @@ class UserServices {
     await db.Follower.create({ user_id, followed_user_id })
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.FOLLOW_SUCCESS)
+  }
+  async unfollow({ user_id, followed_user_id }: { user_id: number; followed_user_id: number }) {
+    if (Number(user_id) === Number(followed_user_id)) {
+      return handleResponse(HttpStatusCode.BAD_REQUEST, false, 'Cannot unfollow yourself')
+    }
+
+    // Validate if the followed user exists
+    const isUserExist = await db.User.count({ where: { id: followed_user_id } })
+    if (!isUserExist) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    // Check if the follow relationship exists
+    const isFollowed = await db.Follower.findOne({ where: { user_id, followed_user_id } })
+    if (!isFollowed) {
+      return handleResponse(HttpStatusCode.BAD_REQUEST, false, 'You are not following this user')
+    }
+
+    // Delete the follow relationship
+    await db.Follower.destroy({ where: { user_id, followed_user_id } })
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UNFOLLOW_SUCCESS)
   }
 }
 

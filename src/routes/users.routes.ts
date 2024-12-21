@@ -37,6 +37,13 @@ router.get('/:username', verifyToken(TokenType.AccessToken), asyncHandler(userCo
 
 router.post('/follow', verifyToken(TokenType.AccessToken), validate(FollowSchema), asyncHandler(userController.follow))
 
+router.delete(
+  '/unfollow',
+  verifyToken(TokenType.AccessToken),
+  validate(FollowSchema),
+  asyncHandler(userController.unfollow)
+)
+
 router.patch(
   '/profile',
   verifyToken(TokenType.AccessToken),
