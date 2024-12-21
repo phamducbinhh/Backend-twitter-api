@@ -5,6 +5,7 @@ import asyncHandler from '~/middlewares/asyncHandler'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import { verifiedUserValidator, verifyToken } from '~/middlewares/jwtMiddleware'
 import { validate } from '~/middlewares/validate'
+import { FollowSchema } from '~/schema/user/follow'
 import { ForgotPasswordSchema } from '~/schema/user/forgot-password'
 import { ResetPasswordSchema } from '~/schema/user/reset-password'
 import { UpdateProfileSchema } from '~/schema/user/update-profile'
@@ -32,7 +33,9 @@ router.post(
 
 router.get('/profile', verifyToken(TokenType.AccessToken), asyncHandler(userController.getmetProfile))
 
-router.get('/profile/:username', verifyToken(TokenType.AccessToken), asyncHandler(userController.getProfile))
+router.get('/:username', verifyToken(TokenType.AccessToken), asyncHandler(userController.getProfile))
+
+router.post('/follow', verifyToken(TokenType.AccessToken), validate(FollowSchema), asyncHandler(userController.follow))
 
 router.patch(
   '/profile',

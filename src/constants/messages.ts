@@ -60,6 +60,7 @@ export const USERS_MESSAGES = {
   FOLLOW_SUCCESS: 'Follow success',
   INVALID_USER_ID: 'Invalid user id',
   FOLLOWED: 'Followed',
+  ALREADY_FOLLOWED: 'Already followed',
   ALREADY_UNFOLLOWED: 'Already unfollowed',
   UNFOLLOW_SUCCESS: 'Unfollow success',
   USERNAME_EXISTED: 'Username existed',
@@ -68,7 +69,8 @@ export const USERS_MESSAGES = {
   GMAIL_NOT_VERIFIED: 'Gmail not verified',
   UPLOAD_SUCCESS: 'Upload success',
   REFRESH_TOKEN_SUCCESS: 'Refresh token success',
-  GET_VIDEO_STATUS_SUCCESS: 'Get video status success'
+  GET_VIDEO_STATUS_SUCCESS: 'Get video status success',
+  CANNOT_FOLLOW_YOURSELF: 'Cannot follow yourself'
 } as const
 
 export const TWEETS_MESSAGES = {

@@ -62,6 +62,16 @@ class UserController {
       data: response.data
     })
   }
+
+  async follow(req: any, res: Response) {
+    const user_id = req.user?.id
+    const followed_user_id = req.body.followed_user_id
+    const response = await userService.follow({ user_id, followed_user_id })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message
+    })
+  }
 }
 
 const userController = new UserController()

@@ -145,6 +145,21 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_PROFILE_SUCCESS, response)
   }
+
+  async follow({ user_id, followed_user_id }: { user_id: number; followed_user_id: number }) {
+    if (Number(user_id) === Number(followed_user_id)) {
+      return handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.CANNOT_FOLLOW_YOURSELF)
+    }
+    const existingFollow = await db.Follower.findOne({ where: { user_id, followed_user_id } })
+
+    if (existingFollow) {
+      return handleResponse(HttpStatusCode.BAD_REQUEST, false, USERS_MESSAGES.ALREADY_FOLLOWED)
+    }
+    // Create a new follow
+    await db.Follower.create({ user_id, followed_user_id })
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.FOLLOW_SUCCESS)
+  }
 }
 
 export default new UserServices()
