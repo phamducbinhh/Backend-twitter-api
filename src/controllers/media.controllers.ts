@@ -3,11 +3,12 @@ import mediaService from '~/services/media.service'
 import { sendResponse } from '~/utils/response'
 
 class MediaController {
-  async uploadMedia(req: any, res: Response) {
-    const response = await mediaService.uploadMedia()
+  async uploadImageMedia(req: any, res: Response) {
+    const response = await mediaService.uploadImageMedia(req)
     sendResponse(res, response.statusCode, {
       success: response.success,
-      message: response.message
+      message: response.message,
+      data: response.data
     })
   }
 }

@@ -56,6 +56,7 @@ export const USERS_MESSAGES = {
   IMAGE_URL_MUST_BE_STRING: 'Avatar must be a string',
   IMAGE_URL_LENGTH: 'Avatar length must be from 1 to 200',
   UPDATE_ME_SUCCESS: 'Update my profile success',
+  UPLOAD_FAILED: 'Upload failed',
   GET_PROFILE_SUCCESS: 'Get profile success',
   FOLLOW_SUCCESS: 'Follow success',
   INVALID_USER_ID: 'Invalid user id',

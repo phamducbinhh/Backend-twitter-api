@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit'
 import { connectDatabase } from './dbs/init.db'
 import { errorHandler } from './middlewares/errorHandler'
 import initRoutes from './routes'
+import { initFolder } from './utils/files'
 const app = express()
 
 const corsOptions = {
@@ -22,6 +23,10 @@ const limiter = rateLimit({
   legacyHeaders: false // Disable the `X-RateLimit-*` headers
   // store: ... , // Use an external store for more precise rate limiting
 })
+
+// tạo folder uploads
+initFolder()
+
 app.use(limiter)
 
 app.use(cors(corsOptions))
