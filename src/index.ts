@@ -6,6 +6,7 @@ import { connectDatabase } from './dbs/init.db'
 import { errorHandler } from './middlewares/errorHandler'
 import initRoutes from './routes'
 import { initFolder } from './utils/files'
+import { envConfig } from './constants/config'
 const app = express()
 
 const corsOptions = {
@@ -45,8 +46,8 @@ const startServer = async () => {
   try {
     await connectDatabase()
 
-    app.listen(process.env.PORT, () => {
-      console.log(`App server listening on port: ${process.env.PORT || 4000}`)
+    app.listen(envConfig.port, () => {
+      console.log(`App server listening on port: ${envConfig.port}`)
     })
   } catch (err: any) {
     console.error('App server error:', err.stack)
