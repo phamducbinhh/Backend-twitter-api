@@ -44,6 +44,15 @@ class AuthController {
       message: USERS_MESSAGES.LOGOUT_SUCCESS
     })
   }
+
+  async loginGoogle(req: Request | (any & { user: { id: number } }), res: Response) {
+    const response = await authService.loginGoogle({ accessToken: req.body.accessToken }, res)
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message,
+      data: response.data
+    })
+  }
 }
 
 const authController = new AuthController()

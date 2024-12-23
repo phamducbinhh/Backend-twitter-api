@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { LoginReqBody, RefreshTokenReqBody, RegisterReqBody } from '~/types/users.type'
@@ -108,6 +109,71 @@ class AuthServices {
     setTokenCookie(res, token)
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.TOKEN_REFRESHED, { token })
+  }
+
+  async loginGoogle({ accessToken }: { accessToken: string }, res: any) {
+    try {
+      const userInfo = await this.fetchGoogleUserInfo(accessToken)
+
+      const { user, created } = await this.findOrCreateUser(userInfo)
+
+      if (!user) {
+        return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+      }
+
+      const { token, refreshToken } = await this.generateAndSaveTokens(user, res)
+
+      return handleResponse(
+        HttpStatusCode.SUCCESS,
+        true,
+        created ? USERS_MESSAGES.REGISTER_SUCCESS : USERS_MESSAGES.LOGIN_SUCCESS,
+        { token, refreshToken }
+      )
+    } catch (error: any) {
+      return handleResponse(HttpStatusCode.BAD_REQUEST, false, error.message)
+    }
+  }
+
+  async generateAndSaveTokens(user: any, res: any) {
+    const token = generateAccessToken({
+      id: user.id,
+      verifyStatus: user.verify_status
+    })
+    setTokenCookie(res, token)
+
+    const refreshToken = generateRefreshToken({
+      id: user.id,
+      verifyStatus: user.verify_status
+    })
+    await refreshTokenService.createRefreshToken(user.id, refreshToken)
+
+    return { token, refreshToken }
+  }
+
+  async findOrCreateUser({ email, sub, name }: { email: string; sub: string; name: string }) {
+    const [user, created] = await db.User.findOrCreate({
+      where: { email },
+      defaults: {
+        email,
+        name,
+        username: sub,
+        password: '' // Placeholder for Google login
+      }
+    })
+
+    return { user, created }
+  }
+
+  async fetchGoogleUserInfo(accessToken: string) {
+    const url = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`
+    const response = await axios.get(url)
+    const { email, sub, name } = response.data
+
+    if (!email || !sub || !name) {
+      throw new Error(USERS_MESSAGES.EMAIL_IS_INVALID)
+    }
+
+    return { email, sub, name }
   }
 }
 

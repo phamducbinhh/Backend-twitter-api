@@ -16,4 +16,6 @@ router.post('/logout', verifyToken(TokenType.AccessToken), asyncHandler(authCont
 
 router.post('/refresh-token', verifyToken(TokenType.RefreshToken), asyncHandler(authController.refreshToken))
 
+router.post('/google', asyncHandler(authController.loginGoogle))
+
 export default router
