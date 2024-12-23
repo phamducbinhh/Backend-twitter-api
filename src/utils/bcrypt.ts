@@ -1,9 +1,22 @@
 import bcrypt from 'bcrypt'
 
+const saltRounds = 12
+
 export const hashPassword = (password: string): string => {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(12))
+  try {
+    const salt = bcrypt.genSaltSync(saltRounds)
+    return bcrypt.hashSync(password, salt)
+  } catch (error) {
+    console.error('Error hashing password:', error)
+    throw error
+  }
 }
 
-export const comparePassword = (password: string, hashedPassword: string): boolean => {
-  return bcrypt.compareSync(password, hashedPassword)
+export const comparePassword = (password: string, hash: string): boolean => {
+  try {
+    return bcrypt.compareSync(password, hash)
+  } catch (error) {
+    console.error('Error comparing password:', error)
+    throw error
+  }
 }
