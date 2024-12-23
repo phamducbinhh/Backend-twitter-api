@@ -189,6 +189,20 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UNFOLLOW_SUCCESS)
   }
+
+  async changePassword({ id, body }: { id: string; body: any }) {
+    const user = await db.User.findByPk(id)
+
+    if (!user) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+    }
+
+    await user.update({
+      password: hashPassword(body.new_password)
+    })
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS)
+  }
 }
 
 export default new UserServices()

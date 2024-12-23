@@ -82,6 +82,14 @@ class UserController {
       message: response.message
     })
   }
+
+  async changePassword(req: { user: { id: string }; body: any } | any, res: Response) {
+    const response = await userService.changePassword({ body: req.body, id: req.user?.id })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message
+    })
+  }
 }
 
 const userController = new UserController()

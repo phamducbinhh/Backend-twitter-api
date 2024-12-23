@@ -5,6 +5,7 @@ import asyncHandler from '~/middlewares/asyncHandler'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import { verifiedUserValidator, verifyToken } from '~/middlewares/jwtMiddleware'
 import { validate } from '~/middlewares/validate'
+import { ChangePasswordSchema } from '~/schema/user/change-password'
 import { FollowSchema } from '~/schema/user/follow'
 import { ForgotPasswordSchema } from '~/schema/user/forgot-password'
 import { ResetPasswordSchema } from '~/schema/user/reset-password'
@@ -60,6 +61,14 @@ router.patch(
     'cover_photo'
   ]),
   asyncHandler(userController.updateProfile)
+)
+
+router.put(
+  '/change-password',
+  verifyToken(TokenType.AccessToken),
+  verifiedUserValidator,
+  validate(ChangePasswordSchema),
+  asyncHandler(userController.changePassword)
 )
 
 export default router
