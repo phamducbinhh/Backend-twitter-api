@@ -19,12 +19,18 @@ class MediaService {
     const outputPath = path.join(outputDir, outputFileName)
 
     // Thực hiện chuyển đổi sang WebP
-    const resolve = await sharp(inputPath).webp({ quality: 80 }).toFile(outputPath)
+    await sharp(inputPath).webp({ quality: 80 }).toFile(outputPath)
 
     // Xóa file gốc nếu cần
     fs.unlinkSync(inputPath)
 
-    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPLOAD_SUCCESS, resolve)
+    // Tạo URL đầy đủ cho ảnh
+    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/images/${outputFileName}`
+
+    // Trả về phản hồi
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPLOAD_SUCCESS, {
+      url: imageUrl
+    })
   }
 }
 
