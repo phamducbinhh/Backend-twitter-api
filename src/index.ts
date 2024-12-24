@@ -2,11 +2,13 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
 import rateLimit from 'express-rate-limit'
+import path from 'path'
+import { envConfig } from './constants/config'
+import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import { connectDatabase } from './dbs/init.db'
 import { errorHandler } from './middlewares/errorHandler'
 import initRoutes from './routes'
 import { initFolder } from './utils/files'
-import { envConfig } from './constants/config'
 const app = express()
 
 const corsOptions = {
@@ -41,6 +43,8 @@ app.use(express.urlencoded({ extended: true }))
 initRoutes(app)
 
 app.use(errorHandler)
+
+app.use('/static', express.static(path.resolve(UPLOAD_IMAGE_DIR)))
 
 const startServer = async () => {
   try {

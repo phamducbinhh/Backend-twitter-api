@@ -2,7 +2,6 @@ import { File } from 'formidable'
 import fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
-import { envConfig, isProduction } from '~/constants/config'
 import { UPLOAD_IMAGE_DIR } from '~/constants/dir'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
@@ -26,11 +25,11 @@ class MediaService {
     fs.unlinkSync(inputPath)
 
     // Tạo URL đầy đủ cho ảnh
-    const imageUrl = `${req.protocol}://${req.get('host')}/static/image/${outputFileName}`
+    const imageUrl = `${req.protocol}://${req.get('host')}/static/${outputFileName}`
 
     // Trả về phản hồi
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPLOAD_SUCCESS, {
-      url: isProduction ? `${envConfig.port}/static/images/${outputFileName}` : imageUrl
+      url: imageUrl
     })
   }
 }
