@@ -101,6 +101,8 @@ class AuthServices {
     if (!user) {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
     }
+    // Xóa refresh token khỏi cơ sở dữ liệu
+    await storedToken.destroy()
 
     const token = generateAccessToken({
       id: user.id,
