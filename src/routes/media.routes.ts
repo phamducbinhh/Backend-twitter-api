@@ -13,4 +13,11 @@ router.post(
   asyncHandler(mediaController.uploadImageMedia)
 )
 
+router.post(
+  '/upload-video',
+  verifyToken(TokenType.AccessToken),
+  verifiedUserValidator,
+  asyncHandler(mediaController.uploadVideoMedia)
+)
+
 export default router

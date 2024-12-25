@@ -7,7 +7,7 @@ import { MediaType } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { Media } from '~/types/media.type'
-import { handleUploadImage } from '~/utils/files'
+import { handleUploadImage, handleUploadVideo } from '~/utils/files'
 import { handleResponse } from '~/utils/response'
 
 class MediaService {
@@ -30,7 +30,7 @@ class MediaService {
         fs.unlinkSync(inputPath)
 
         // Bước 5: Tạo URL cho ảnh đã chuyển đổi
-        const imageUrl = `${req.protocol}://${req.get('host')}/static/${outputFileName}`
+        const imageUrl = `${req.protocol}://${req.get('host')}/static/image/${outputFileName}`
         return {
           url: imageUrl,
           type: MediaType.Image
@@ -41,6 +41,17 @@ class MediaService {
     // Bước 6: Trả về phản hồi với danh sách URL của ảnh đã xử lý
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPLOAD_SUCCESS, {
       urls: result
+    })
+  }
+  async uploadVideoMedia(req: any) {
+    const files: File[] = await handleUploadVideo(req)
+
+    const { newFilename } = files[0]
+    const videoUrl = `${req.protocol}://${req.get('host')}/static/video/${newFilename}`
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPLOAD_SUCCESS, {
+      urls: videoUrl,
+      type: MediaType.Video
     })
   }
 }
