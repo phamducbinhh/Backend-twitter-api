@@ -7,5 +7,6 @@ export const HttpStatusCode = {
   NOT_FOUND: 404, //Tài nguyên không được tìm thấy.
   UNPROCESSABLE_ENDTITY: 422, //Dữ liệu gửi lên không hợp lệ, nhưng không thuộc về lỗi 400 Bad Request.
   INTERNAL_SERVER_ERROR: 500, //Lỗi server.
-  CONFLICT: 409 //Tài nguyên đã tồn tại.
+  CONFLICT: 409, //Tài nguyên đã tồn tại.
+  PARTIAL_CONTENT: 206 //Phân đoạn stream.
 }

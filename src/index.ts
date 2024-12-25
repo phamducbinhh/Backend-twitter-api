@@ -2,12 +2,11 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
 import rateLimit from 'express-rate-limit'
-import path from 'path'
 import { envConfig } from './constants/config'
-import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import { connectDatabase } from './dbs/init.db'
 import { errorHandler } from './middlewares/errorHandler'
 import initRoutes from './routes'
+import staticRouter from './routes/static.routes'
 import { initFolder } from './utils/files'
 const app = express()
 
@@ -44,8 +43,7 @@ initRoutes(app)
 
 app.use(errorHandler)
 
-app.use('/static/image', express.static(path.resolve(UPLOAD_IMAGE_DIR)))
-app.use('/static/video', express.static(path.resolve(UPLOAD_VIDEO_DIR)))
+app.use('/static', staticRouter)
 
 const startServer = async () => {
   try {
