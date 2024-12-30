@@ -34,6 +34,9 @@ module.exports = {
       user_views: {
         type: Sequelize.INTEGER
       },
+      audience: {
+        type: Sequelize.INTEGER
+      },
       type: {
         type: Sequelize.ENUM('Tweet', 'Retweet', 'Comment', 'QuoteTweet'),
         allowNull: false
