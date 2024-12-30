@@ -38,8 +38,9 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       type: {
-        type: Sequelize.ENUM('Tweet', 'Retweet', 'Comment', 'QuoteTweet'),
-        allowNull: false
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0 // 0: Tweet, 1: Retweet, 2: Comment, 3: Quote Tweet
       },
       createdAt: {
         allowNull: false,

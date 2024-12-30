@@ -24,7 +24,8 @@ module.exports = (sequelize: any, DataTypes: any) => {
       content: DataTypes.TEXT,
       parent_id: DataTypes.INTEGER,
       guest_views: DataTypes.INTEGER,
-      user_views: DataTypes.INTEGER
+      user_views: DataTypes.INTEGER,
+      type: DataTypes.INTEGER
     },
     {
       sequelize,
