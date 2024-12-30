@@ -102,7 +102,7 @@ class UserServices {
       include: [
         {
           model: db.Follower,
-          as: 'followers',
+          as: 'following',
           attributes: { exclude: ['createdAt', 'updatedAt'] },
           include: [
             {

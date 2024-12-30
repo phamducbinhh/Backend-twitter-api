@@ -10,7 +10,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     static associate(models: any) {
       // define association here
       User.hasMany(models.Tweet, { foreignKey: 'user_id' })
-      User.hasMany(models.Follower, { foreignKey: 'user_id', as: 'followers' })
+      User.hasMany(models.Follower, { foreignKey: 'user_id', as: 'following' })
       User.hasMany(models.Like, { foreignKey: 'user_id' })
       User.hasMany(models.Bookmark, { foreignKey: 'user_id' })
       User.hasMany(models.Mention, { foreignKey: 'user_id' })

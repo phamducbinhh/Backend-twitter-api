@@ -11,7 +11,7 @@ export class UserRespone implements UserType {
   username: string
   cover_photo: string
   avatar: string
-  followers: any[]
+  following: any[]
 
   constructor(user: UserType) {
     this.id = user.id
@@ -24,7 +24,7 @@ export class UserRespone implements UserType {
     this.username = user.username
     this.cover_photo = user.cover_photo
     this.avatar = user.avatar
-    this.followers = this.mapFollowers(user.followers)
+    this.following = this.mapFollowing(user.following)
   }
 
   public static toResponse(
@@ -44,8 +44,8 @@ export class UserRespone implements UserType {
     }
   }
 
-  private mapFollowers(followers: any[]): any[] {
-    return followers.map((item: any) => ({
+  private mapFollowing(following: any[]): any[] {
+    return following.map((item: any) => ({
       id: item.followed.id,
       username: item.followed.username,
       name: item.followed.name,
