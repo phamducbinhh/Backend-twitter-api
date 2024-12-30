@@ -16,4 +16,12 @@ router.post(
   asyncHandler(bookmarkController.createBookmark)
 )
 
+router.delete(
+  '/',
+  verifyToken(TokenType.AccessToken),
+  verifiedUserValidator,
+  validate(TweetBookmarkSchema),
+  asyncHandler(bookmarkController.unBookmark)
+)
+
 export default router

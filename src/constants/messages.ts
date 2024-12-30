@@ -96,7 +96,8 @@ export const TWEETS_MESSAGES = {
 export const BOOKMARK_MESSAGES = {
   BOOKMARK_SUCCESSFULLY: 'Bookmark successfully',
   UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully',
-  ALREADY_BOOKMARKED: 'Already bookmarked'
+  ALREADY_BOOKMARKED: 'Already bookmarked',
+  NOT_BOOKMARKED: 'Not bookmarked'
 }
 
 export const LIKE_MESSAGES = {

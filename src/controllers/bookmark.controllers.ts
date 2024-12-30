@@ -12,6 +12,14 @@ class BookmarkController {
       message: response.message
     })
   }
+
+  async unBookmark(req: { user: { id: string }; body: any } | any, res: Response) {
+    const response = await bookmarkService.unBookmark({ id: req.user?.id, body: req.body })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message
+    })
+  }
 }
 
 const bookmarkController = new BookmarkController()
