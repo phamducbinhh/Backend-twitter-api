@@ -8,7 +8,7 @@ export class TweetSchema {
     return checkSchema({
       type: {
         isIn: {
-          options: numberEnumToArray(TweetType),
+          options: [numberEnumToArray(TweetType)],
           errorMessage: TWEETS_MESSAGES.INVALID_TYPE
         },
         optional: true
@@ -16,10 +16,10 @@ export class TweetSchema {
 
       audience: {
         isIn: {
-          options: numberEnumToArray(TweetAudience),
+          options: [numberEnumToArray(TweetAudience)], // Sử dụng Enum để xác định giá trị hợp lệ
           errorMessage: TWEETS_MESSAGES.INVALID_AUDIENCE
         },
-        optional: true
+        optional: true // Không bắt buộc
       },
 
       content: {
