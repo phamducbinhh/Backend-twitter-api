@@ -1,4 +1,5 @@
 'use strict'
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -10,7 +11,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       type: {
-        type: Sequelize.ENUM('Image', 'Video'),
+        type: Sequelize.INTEGER,
+        defaultValue: 0, // 0: image, 1: video
         allowNull: false
       },
       url: {

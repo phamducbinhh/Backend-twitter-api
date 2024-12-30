@@ -33,15 +33,7 @@ export class TweetSchema {
 
       media: {
         isArray: true,
-        optional: true,
-        custom: {
-          options: (value: any) => {
-            if (value && !value.every((url: string) => /^https?:\/\/.*\.(jpg|jpeg|png|gif|mp4)$/i.test(url))) {
-              throw new Error(TWEETS_MESSAGES.MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT)
-            }
-            return true
-          }
-        }
+        optional: true
       },
 
       hashtags: {
