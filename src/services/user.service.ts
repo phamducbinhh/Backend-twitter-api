@@ -98,14 +98,29 @@ class UserServices {
       where: { id },
       attributes: {
         exclude: ['password', 'createdAt', 'updatedAt', 'email_verify_token', 'forgot_password_token']
-      }
+      },
+      include: [
+        {
+          model: db.Follower,
+          as: 'followers',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.User,
+              as: 'followed',
+              attributes: ['id', 'username', 'name', 'email']
+            }
+          ]
+        }
+      ]
     })
 
     if (!user) {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
     }
 
-    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_PROFILE_SUCCESS, user)
+    const response = new UserRespone(user)
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_PROFILE_SUCCESS, response)
   }
   async updateProfile({ id, body }: { id: string; body: any }) {
     const user = await db.User.findByPk(id)

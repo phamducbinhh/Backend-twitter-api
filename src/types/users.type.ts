@@ -14,6 +14,8 @@ export interface UserType {
   website: string
   username: string
   cover_photo: string
+  avatar: string
+  followers?: any
   createdAt?: Date
   updatedAt?: Date
 }
