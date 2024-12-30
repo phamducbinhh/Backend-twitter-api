@@ -15,7 +15,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
   Media.init(
     {
       url: DataTypes.STRING,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER // 0: image, 1: video
     },
     {
       sequelize,

@@ -33,7 +33,24 @@ export class TweetSchema {
 
       media: {
         isArray: true,
-        optional: true
+        optional: true,
+        custom: {
+          options: (value: any) => {
+            if (
+              value &&
+              !value.every(
+                (media: { url: string; type: number }) =>
+                  typeof media.url === 'string' &&
+                  media.url.trim() !== '' &&
+                  Number.isInteger(media.type) &&
+                  [0, 1].includes(media.type) // 0: image, 1: video
+              )
+            ) {
+              throw new Error(TWEETS_MESSAGES.MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT)
+            }
+            return true
+          }
+        }
       },
 
       hashtags: {
@@ -54,7 +71,7 @@ export class TweetSchema {
         optional: true,
         custom: {
           options: (value: any) => {
-            if (value && !value.every((mentionId: number) => Number.isInteger(mentionId))) {
+            if (value && !value.every((mention: { user_id: number }) => Number.isInteger(mention.user_id))) {
               throw new Error(TWEETS_MESSAGES.MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID)
             }
             return true
