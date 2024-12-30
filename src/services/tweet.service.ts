@@ -6,10 +6,50 @@ import { handleResponse } from '~/utils/response'
 const db = require('../models')
 
 class TweetService {
+  // Hàm xử lý Media
+  private async handleMedia(medias: any[], tweetId: number, transaction: any) {
+    for (const media of medias) {
+      if (!media.url || !media.type) {
+        throw new Error(TWEETS_MESSAGES.INVALID_TWEET_ID)
+      }
+
+      const newMedia = await db.Media.create({ url: media.url, type: media.type }, { transaction })
+
+      await db.TweetMedia.create({ tweet_id: tweetId, media_id: newMedia.id }, { transaction })
+    }
+  }
+
+  // Hàm xử lý Hashtags
+  private async handleHashtags(hashtags: string[], tweetId: number, transaction: any) {
+    for (const hashtag of hashtags) {
+      const [newHashtag] = await db.Hashtag.findOrCreate({
+        where: { name: hashtag },
+        transaction
+      })
+
+      await db.TweetHashtag.create({ tweet_id: tweetId, hashtag_id: newHashtag.id }, { transaction })
+    }
+  }
+
+  // Hàm xử lý Mentions
+  private async handleMentions(mentions: string[], tweetId: number, transaction: any) {
+    for (const mentionId of mentions) {
+      const user = await db.User.findByPk(mentionId)
+      if (!user) {
+        throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+      }
+
+      await db.Mention.create({ tweet_id: tweetId, user_id: user.id }, { transaction })
+    }
+  }
+
+  // Hàm chính để tạo Tweet
   async createTweet({ id, body }: { id: string; body: TweetRequestBody }) {
     const transaction = await db.sequelize.transaction()
+
     try {
       const { audience, content, medias, parent_id, type, hashtags, mentions } = body
+
       // 1. Tạo tweet mới
       const tweet = await db.Tweet.create(
         {
@@ -17,71 +57,28 @@ class TweetService {
           content,
           parent_id: parent_id || null,
           type,
-          user_id: id
+          user_id: id,
+          guest_views: 0,
+          user_views: 0
         },
         { transaction }
       )
 
-      // Bước 2: Xử lý Media
+      // 2. Xử lý Media
       if (medias && medias.length > 0) {
-        for (const media of medias) {
-          if (!media.url || !media.type) {
-            return handleResponse(HttpStatusCode.BAD_REQUEST, false, TWEETS_MESSAGES.INVALID_TWEET_ID)
-          }
-
-          const newMedia = await db.Media.create(
-            {
-              url: media.url,
-              type: media.type
-            },
-            { transaction }
-          )
-
-          await db.TweetMedia.create(
-            {
-              tweet_id: tweet.id,
-              media_id: newMedia.id
-            },
-            { transaction }
-          )
-        }
+        await this.handleMedia(medias, tweet.id, transaction)
       }
 
-      // Bước 3: Xử lý Hashtags
+      // 3. Xử lý Hashtags
       if (hashtags && hashtags.length > 0) {
-        for (const hashtag of hashtags) {
-          const [newHashtag] = await db.Hashtag.findOrCreate({
-            where: { name: hashtag },
-            transaction
-          })
-
-          await db.TweetHashtag.create(
-            {
-              tweet_id: tweet.id,
-              hashtag_id: newHashtag.id
-            },
-            { transaction }
-          )
-        }
+        await this.handleHashtags(hashtags, tweet.id, transaction)
       }
 
-      // Bước 4: Xử lý Mentions
+      // 4. Xử lý Mentions
       if (mentions && mentions.length > 0) {
-        for (const mentionId of mentions) {
-          const user = await db.User.findByPk(mentionId) // Lấy thông tin người dùng bị mention
-          if (!user) {
-            return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
-          }
-
-          await db.Mention.create(
-            {
-              tweet_id: tweet.id,
-              user_id: user.id
-            },
-            { transaction }
-          )
-        }
+        await this.handleMentions(mentions, tweet.id, transaction)
       }
+
       // Commit transaction nếu tất cả thành công
       await transaction.commit()
 
