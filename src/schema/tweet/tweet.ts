@@ -31,7 +31,7 @@ export class TweetSchema {
         }
       },
 
-      media: {
+      medias: {
         isArray: true,
         optional: true,
         custom: {

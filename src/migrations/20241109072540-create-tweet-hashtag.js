@@ -16,7 +16,6 @@ module.exports = {
           key: 'id'
         },
         onDelete: 'SET NULL',
-        unique: true
       },
       hashtag_id: {
         type: Sequelize.INTEGER,
