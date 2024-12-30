@@ -1,4 +1,5 @@
 import authRouter from './auth.routes'
+import bookmarkRouter from './bookmarks.routes'
 import mediaRouter from './media.routes'
 import tweetRouter from './tweet.routes'
 import userRouter from './users.routes'
@@ -8,6 +9,7 @@ const initRoutes = (app: any): void => {
   app.use('/api/v1/user', userRouter)
   app.use('/api/v1/media', mediaRouter)
   app.use('/api/v1/tweet', tweetRouter)
+  app.use('/api/v1/bookmark', bookmarkRouter)
 }
 
 export default initRoutes

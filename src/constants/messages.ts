@@ -76,6 +76,7 @@ export const USERS_MESSAGES = {
 
 export const TWEETS_MESSAGES = {
   INVALID_TYPE: 'Invalid type',
+  NOT_EMTY_TWEET_ID: 'Not empty tweet id',
   INVALID_AUDIENCE: 'Invalid audience',
   PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'Parent id must be a valid tweet id',
   PARENT_ID_MUST_BE_NULL: 'Parent id must be null',
@@ -94,7 +95,8 @@ export const TWEETS_MESSAGES = {
 
 export const BOOKMARK_MESSAGES = {
   BOOKMARK_SUCCESSFULLY: 'Bookmark successfully',
-  UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully'
+  UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully',
+  ALREADY_BOOKMARKED: 'Already bookmarked'
 }
 
 export const LIKE_MESSAGES = {

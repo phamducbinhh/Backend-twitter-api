@@ -13,7 +13,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       Tweet.hasMany(models.Tweet, { foreignKey: 'parent_id' })
       Tweet.hasMany(models.TweetHashtag, { foreignKey: 'tweet_id', as: 'tweet_hashtags' })
       Tweet.hasMany(models.Like, { foreignKey: 'tweet_id' })
-      Tweet.hasMany(models.Bookmark, { foreignKey: 'tweet_id' })
+      Tweet.hasMany(models.Bookmark, { foreignKey: 'tweet_id', as: 'bookmarks' })
       Tweet.hasMany(models.TweetMedia, { foreignKey: 'tweet_id', as: 'tweet_media' })
       Tweet.hasMany(models.Mention, { foreignKey: 'tweet_id', as: 'mentions' })
     }

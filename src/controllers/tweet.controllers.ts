@@ -9,7 +9,8 @@ class TweetController {
     const response = await tweetService.createTweet({ id: req.user?.id, body: req.body })
     sendResponse(res, response.statusCode, {
       success: response.success,
-      message: response.message
+      message: response.message,
+      data: response.data
     })
   }
 

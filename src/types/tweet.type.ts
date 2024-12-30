@@ -28,3 +28,9 @@ export type Mention = {
   name: string
   email: string
 }
+export type Bookmark = {
+  id: number
+  username: string
+  name: string
+  email: string
+}

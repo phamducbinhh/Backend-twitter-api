@@ -147,6 +147,18 @@ class TweetService {
               attributes: ['id', 'username', 'name', 'email']
             }
           ]
+        },
+        {
+          model: db.Bookmark,
+          as: 'bookmarks',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.User,
+              as: 'user',
+              attributes: ['id', 'username', 'name', 'email']
+            }
+          ]
         }
       ]
     })

@@ -1,4 +1,4 @@
-import { Mention, TweetHashtag, TweetMedia } from '~/types/tweet.type'
+import { Bookmark, Mention, TweetHashtag, TweetMedia } from '~/types/tweet.type'
 
 export class TweetResponse {
   id: number
@@ -12,6 +12,7 @@ export class TweetResponse {
   tweet_media: TweetMedia[]
   tweet_hashtags: TweetHashtag[]
   mentions: Mention[]
+  bookmarks: Bookmark[]
 
   constructor(tweet: any) {
     this.id = tweet.id
@@ -25,6 +26,7 @@ export class TweetResponse {
     this.tweet_media = this.mapTweetMedia(tweet.tweet_media)
     this.tweet_hashtags = this.mapTweetHashtags(tweet.tweet_hashtags)
     this.mentions = this.mapMentions(tweet.mentions)
+    this.bookmarks = this.mapBookmarks(tweet.bookmarks)
   }
 
   private mapTweetMedia(tweetMedia: TweetMedia[]): TweetMedia[] {
@@ -44,6 +46,14 @@ export class TweetResponse {
 
   private mapMentions(mentions: Mention[]): Mention[] {
     return mentions.map((item: any) => ({
+      id: item.user.id,
+      username: item.user.username,
+      name: item.user.name,
+      email: item.user.email
+    }))
+  }
+  private mapBookmarks(bookmarks: Bookmark[]): Bookmark[] {
+    return bookmarks.map((item: any) => ({
       id: item.user.id,
       username: item.user.username,
       name: item.user.name,

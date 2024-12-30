@@ -9,7 +9,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
      */
     static associate(models: any) {
       // define association here
-      Bookmark.belongsTo(models.User, { foreignKey: 'user_id' })
+      Bookmark.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' })
       Bookmark.belongsTo(models.Tweet, { foreignKey: 'tweet_id' })
     }
   }
