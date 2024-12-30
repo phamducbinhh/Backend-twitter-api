@@ -10,7 +10,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     static associate(models: any) {
       // define association here
       TweetMedia.belongsTo(models.Tweet, { foreignKey: 'tweet_id' })
-      TweetMedia.belongsTo(models.Media, { foreignKey: 'media_id' })
+      TweetMedia.belongsTo(models.Media, { foreignKey: 'media_id', as: 'media' })
     }
   }
   TweetMedia.init(

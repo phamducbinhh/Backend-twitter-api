@@ -16,4 +16,6 @@ router.post(
   asyncHandler(tweetController.createTweet)
 )
 
+router.get('/:id', verifyToken(TokenType.AccessToken), asyncHandler(tweetController.getTweetDetail))
+
 export default router

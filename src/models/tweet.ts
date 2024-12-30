@@ -11,11 +11,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
       // define association here
       Tweet.belongsTo(models.User, { foreignKey: 'user_id' })
       Tweet.hasMany(models.Tweet, { foreignKey: 'parent_id' })
-      Tweet.hasMany(models.TweetHashtag, { foreignKey: 'tweet_id' })
+      Tweet.hasMany(models.TweetHashtag, { foreignKey: 'tweet_id', as: 'tweet_hashtags' })
       Tweet.hasMany(models.Like, { foreignKey: 'tweet_id' })
       Tweet.hasMany(models.Bookmark, { foreignKey: 'tweet_id' })
-      Tweet.hasMany(models.TweetMedia, { foreignKey: 'tweet_id' })
-      Tweet.hasMany(models.Mention, { foreignKey: 'tweet_id' })
+      Tweet.hasMany(models.TweetMedia, { foreignKey: 'tweet_id', as: 'tweet_media' })
+      Tweet.hasMany(models.Mention, { foreignKey: 'tweet_id', as: 'mentions' })
     }
   }
   Tweet.init(

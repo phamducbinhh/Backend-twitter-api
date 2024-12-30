@@ -1,5 +1,6 @@
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { TWEETS_MESSAGES, USERS_MESSAGES } from '~/constants/messages'
+import { TweetResponse } from '~/response/tweet'
 import { TweetRequestBody } from '~/types/tweet.type'
 import { handleResponse } from '~/utils/response'
 
@@ -104,6 +105,59 @@ class TweetService {
       console.error('Error creating tweet:', error)
       return handleResponse(HttpStatusCode.INTERNAL_SERVER_ERROR, false, TWEETS_MESSAGES.CREATE_TWEET_FAILED)
     }
+  }
+
+  async getTweetDetail({ id }: { id: string }) {
+    // Tìm tweet theo ID
+    const tweet = await db.Tweet.findByPk(id, {
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      include: [
+        {
+          model: db.TweetMedia,
+          as: 'tweet_media',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.Media,
+              as: 'media',
+              attributes: ['id', 'url', 'type']
+            }
+          ]
+        },
+        {
+          model: db.TweetHashtag,
+          as: 'tweet_hashtags',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.Hashtag,
+              as: 'hashtag',
+              attributes: ['id', 'name']
+            }
+          ]
+        },
+        {
+          model: db.Mention,
+          as: 'mentions',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.User,
+              as: 'user',
+              attributes: ['id', 'username', 'name', 'email']
+            }
+          ]
+        }
+      ]
+    })
+
+    if (!tweet) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, TWEETS_MESSAGES.TWEET_NOT_FOUND)
+    }
+
+    const response = new TweetResponse(tweet)
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, TWEETS_MESSAGES.GET_TWEETS_SUCCESS, response)
   }
 }
 

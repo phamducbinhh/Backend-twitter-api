@@ -1,4 +1,4 @@
-import { TweetAudience, TweetType } from '~/constants/enums'
+import { MediaType, TweetAudience, TweetType } from '~/constants/enums'
 import { Media } from './media.type'
 
 export interface TweetRequestBody {
@@ -9,4 +9,22 @@ export interface TweetRequestBody {
   hashtags: string[]
   mentions: string[] | any
   medias: Media[] | any
+}
+
+export type TweetHashtag = {
+  id: number
+  name: string
+}
+
+export type TweetMedia = {
+  id: number
+  url: string
+  type: MediaType
+}
+
+export type Mention = {
+  id: number
+  username: string
+  name: string
+  email: string
 }
