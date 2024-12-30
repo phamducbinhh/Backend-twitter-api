@@ -1,5 +1,5 @@
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
-import { TWEETS_MESSAGES } from '~/constants/messages'
+import { TWEETS_MESSAGES, USERS_MESSAGES } from '~/constants/messages'
 import { TweetRequestBody } from '~/types/tweet.type'
 import { handleResponse } from '~/utils/response'
 
@@ -9,7 +9,7 @@ class TweetService {
   async createTweet({ id, body }: { id: string; body: TweetRequestBody }) {
     const transaction = await db.sequelize.transaction()
     try {
-      const { audience, content, medias, parent_id, type, hashtags } = body
+      const { audience, content, medias, parent_id, type, hashtags, mentions } = body
       // 1. Tạo tweet mới
       const tweet = await db.Tweet.create(
         {
@@ -59,6 +59,24 @@ class TweetService {
             {
               tweet_id: tweet.id,
               hashtag_id: newHashtag.id
+            },
+            { transaction }
+          )
+        }
+      }
+
+      // Bước 4: Xử lý Mentions
+      if (mentions && mentions.length > 0) {
+        for (const mentionId of mentions) {
+          const user = await db.User.findByPk(mentionId) // Lấy thông tin người dùng bị mention
+          if (!user) {
+            return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.USER_NOT_FOUND)
+          }
+
+          await db.Mention.create(
+            {
+              tweet_id: tweet.id,
+              user_id: user.id
             },
             { transaction }
           )

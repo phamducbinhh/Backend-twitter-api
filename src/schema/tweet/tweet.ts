@@ -68,15 +68,7 @@ export class TweetSchema {
 
       mentions: {
         isArray: true,
-        optional: true,
-        custom: {
-          options: (value: any) => {
-            if (value && !value.every((mention: { user_id: number }) => Number.isInteger(mention.user_id))) {
-              throw new Error(TWEETS_MESSAGES.MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID)
-            }
-            return true
-          }
-        }
+        optional: true
       }
     })
   }

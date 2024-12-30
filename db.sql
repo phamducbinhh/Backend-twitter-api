@@ -112,3 +112,9 @@ CREATE TABLE mentions (
 
 ALTER TABLE users
 ADD COLUMN avatar VARCHAR(255);
+
+-- 1. Drop unique constraint (nếu có) trên cột tweet_id
+ALTER TABLE mentions DROP INDEX tweet_id;
+
+-- 2. Thêm lại index (nếu cần thiết) trên tweet_id (nhưng không có UNIQUE)
+CREATE INDEX idx_tweet_id ON mentions (tweet_id);
