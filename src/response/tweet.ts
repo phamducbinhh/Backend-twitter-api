@@ -27,27 +27,27 @@ export class TweetResponse {
     this.mentions = this.mapMentions(tweet.mentions)
   }
 
-  private mapTweetMedia(tweetMedia: any[]): TweetMedia[] {
-    return tweetMedia.map((media: any) => ({
-      id: media.media.id,
-      url: media.media.url,
-      type: media.media.type
+  private mapTweetMedia(tweetMedia: TweetMedia[]): TweetMedia[] {
+    return tweetMedia.map((item: any) => ({
+      id: item.media.id,
+      url: item.media.url,
+      type: item.media.type
     }))
   }
 
-  private mapTweetHashtags(tweetHashtags: any[]): TweetHashtag[] {
-    return tweetHashtags.map((hashtag: any) => ({
-      id: hashtag.hashtag.id,
-      name: hashtag.hashtag.name
+  private mapTweetHashtags(tweetHashtags: TweetHashtag[]): TweetHashtag[] {
+    return tweetHashtags.map((item: any) => ({
+      id: item.hashtag.id,
+      name: item.hashtag.name
     }))
   }
 
-  private mapMentions(mentions: any[]): Mention[] {
-    return mentions.map((mention: any) => ({
-      id: mention.user.id,
-      username: mention.user.username,
-      name: mention.user.name,
-      email: mention.user.email
+  private mapMentions(mentions: Mention[]): Mention[] {
+    return mentions.map((item: any) => ({
+      id: item.user.id,
+      username: item.user.username,
+      name: item.user.name,
+      email: item.user.email
     }))
   }
 }
