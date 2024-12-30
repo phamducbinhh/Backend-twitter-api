@@ -11,6 +11,7 @@ export class UserRespone implements UserType {
   username: string
   cover_photo: string
   avatar: string
+  verify_status: number
   following: any[]
   followers: any[]
 
@@ -25,6 +26,7 @@ export class UserRespone implements UserType {
     this.username = user.username
     this.cover_photo = user.cover_photo
     this.avatar = user.avatar
+    this.verify_status = user.verify_status
     this.following = this.mapFollowing(user.following)
     this.followers = this.mapFollowers(user.followers)
   }
@@ -42,7 +44,8 @@ export class UserRespone implements UserType {
       website: user.website,
       username: user.username,
       cover_photo: user.cover_photo,
-      avatar: user.avatar
+      avatar: user.avatar,
+      verify_status: user.verify_status
     }
   }
 

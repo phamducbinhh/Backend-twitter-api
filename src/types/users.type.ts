@@ -15,6 +15,7 @@ export interface UserType {
   username: string
   cover_photo: string
   avatar: string
+  verify_status: number
   following?: any
   followers?: any
   createdAt?: Date
