@@ -54,7 +54,7 @@ class TweetService {
   }
 
   // Xử lý Mentions, chỉ xử lý những mention chưa tồn tại
-  private async handleMentions(mentions: string[], tweetId: number, transaction: any) {
+  private async handleMentions(mentions: number[], tweetId: number, transaction: any) {
     const existingMentions = await db.Mention.findAll({
       where: { user_id: mentions },
       transaction
