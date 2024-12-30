@@ -11,11 +11,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
       // define association here
       User.hasMany(models.Tweet, { foreignKey: 'user_id' })
       User.hasMany(models.Follower, { foreignKey: 'user_id', as: 'following' })
+      User.hasMany(models.Follower, { foreignKey: 'followed_user_id', as: 'followers' })
       User.hasMany(models.Like, { foreignKey: 'user_id' })
       User.hasMany(models.Bookmark, { foreignKey: 'user_id' })
       User.hasMany(models.Mention, { foreignKey: 'user_id' })
       User.hasMany(models.RefreshToken, { foreignKey: 'user_id' })
-      User.hasMany(models.Follower, { foreignKey: 'followed_user_id' })
     }
   }
 

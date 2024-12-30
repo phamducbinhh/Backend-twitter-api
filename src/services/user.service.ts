@@ -111,6 +111,18 @@ class UserServices {
               attributes: ['id', 'username', 'name', 'email']
             }
           ]
+        },
+        {
+          model: db.Follower,
+          as: 'followers',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.User,
+              as: 'follow',
+              attributes: ['id', 'username', 'name', 'email']
+            }
+          ]
         }
       ]
     })

@@ -16,6 +16,7 @@ export interface UserType {
   cover_photo: string
   avatar: string
   following?: any
+  followers?: any
   createdAt?: Date
   updatedAt?: Date
 }
