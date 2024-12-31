@@ -24,8 +24,7 @@ module.exports = {
           model: 'tweets',
           key: 'id'
         },
-        onDelete: 'SET NULL',
-        unique: true
+        onDelete: 'SET NULL'
       },
       createdAt: {
         allowNull: false,
