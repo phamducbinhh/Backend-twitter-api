@@ -163,14 +163,7 @@ class TweetService {
         {
           model: db.Bookmark,
           as: 'bookmarks',
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
-          include: [
-            {
-              model: db.User,
-              as: 'user',
-              attributes: ['id', 'username', 'name', 'email']
-            }
-          ]
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         }
       ]
     })
@@ -242,14 +235,7 @@ class TweetService {
         {
           model: db.Bookmark,
           as: 'bookmarks',
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
-          include: [
-            {
-              model: db.User,
-              as: 'user',
-              attributes: ['id', 'username', 'name', 'email']
-            }
-          ]
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         }
       ],
       limit,

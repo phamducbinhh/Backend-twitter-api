@@ -12,7 +12,7 @@ export class TweetResponse {
   tweet_media: TweetMedia[]
   tweet_hashtags: TweetHashtag[]
   mentions: Mention[]
-  bookmarks: Bookmark[]
+  bookmarks: number
 
   constructor(tweet: any) {
     this.id = tweet.id
@@ -26,7 +26,7 @@ export class TweetResponse {
     this.tweet_media = this.mapTweetMedia(tweet.tweet_media)
     this.tweet_hashtags = this.mapTweetHashtags(tweet.tweet_hashtags)
     this.mentions = this.mapMentions(tweet.mentions)
-    this.bookmarks = this.mapBookmarks(tweet.bookmarks)
+    this.bookmarks = tweet.bookmarks.length
   }
 
   private mapTweetMedia(tweetMedia: TweetMedia[]): TweetMedia[] {
