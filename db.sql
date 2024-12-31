@@ -118,3 +118,8 @@ ALTER TABLE mentions DROP INDEX tweet_id;
 
 -- 2. Thêm lại index (nếu cần thiết) trên tweet_id (nhưng không có UNIQUE)
 CREATE INDEX idx_tweet_id ON mentions (tweet_id);
+
+
+DELETE FROM table_name;
+
+ALTER TABLE table_name AUTO_INCREMENT = 1;
