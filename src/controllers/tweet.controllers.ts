@@ -14,8 +14,8 @@ class TweetController {
     })
   }
 
-  async getTweetDetail(req: { params: { id: string } | any }, res: Response) {
-    const response = await tweetService.getTweetDetail({ id: req.params.id })
+  async getTweetDetail(req: any, res: Response) {
+    const response = await tweetService.getTweetDetail({ id: req.params.id, user_id: req.user?.id })
     sendResponse(res, response.statusCode, {
       success: response.success,
       message: response.message,

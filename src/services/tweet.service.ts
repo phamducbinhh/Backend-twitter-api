@@ -1,3 +1,4 @@
+import { ViewType } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { TWEETS_MESSAGES, USERS_MESSAGES } from '~/constants/messages'
 import { TweetResponse } from '~/response/tweet'
@@ -73,6 +74,14 @@ class TweetService {
     }
   }
 
+  // Phương thức private để tăng view
+  private async incrementTweetViews(tweetId: string, field: ViewType.USER_VIEWS | ViewType.GUEST_VIEWS) {
+    await db.Tweet.increment(field, {
+      by: 1,
+      where: { id: tweetId }
+    })
+  }
+
   // Hàm chính để tạo Tweet
   async createTweet({ id, body }: { id: string; body: TweetRequestBody }) {
     const transaction = await db.sequelize.transaction()
@@ -107,8 +116,12 @@ class TweetService {
     }
   }
 
-  async getTweetDetail({ id }: { id: string }) {
+  async getTweetDetail({ id, user_id }: { id: string; user_id: string | null }) {
+    // Tăng view dựa trên user_id
+    const fieldToIncrement = user_id ? ViewType.USER_VIEWS : ViewType.GUEST_VIEWS
+    await this.incrementTweetViews(id, fieldToIncrement)
     // Tìm tweet theo ID
+
     const tweet = await db.Tweet.findByPk(id, {
       attributes: { exclude: ['createdAt', 'updatedAt'] },
       include: [

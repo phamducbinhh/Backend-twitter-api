@@ -1,3 +1,4 @@
+import { NextFunction, Request } from 'express'
 import jwt from 'jsonwebtoken'
 import { envConfig } from '~/constants/config'
 import { TokenType, UserVerifyStatus } from '~/constants/enums'
@@ -57,4 +58,14 @@ export const verifiedUserValidator = (req: any, res: any, next: any) => {
     })
   }
   next()
+}
+
+export const isUserLoggedInValidator = (middleware: (req: Request, res: any, next: NextFunction) => void) => {
+  return (req: Request, res: any, next: NextFunction) => {
+    const authorization = req.cookies?.token || req.headers?.authorization?.split(' ')[1]
+    if (authorization) {
+      return middleware(req, res, next)
+    }
+    next()
+  }
 }

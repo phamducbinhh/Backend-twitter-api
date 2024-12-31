@@ -22,6 +22,11 @@ export enum MediaTypeQuery {
   Video = 'video'
 }
 
+export enum ViewType {
+  USER_VIEWS = 'user_views',
+  GUEST_VIEWS = 'guest_views'
+}
+
 export enum EncodingStatus {
   Pending, // Đang chờ ở hàng đợi (chưa được encode)
   Processing, // Đang encode
