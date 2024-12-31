@@ -1,4 +1,4 @@
-import { ViewType } from '~/constants/enums'
+import { TweetType, ViewType } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { TWEETS_MESSAGES, USERS_MESSAGES } from '~/constants/messages'
 import { TweetResponse } from '~/response/tweet'
@@ -184,11 +184,23 @@ class TweetService {
     return handleResponse(HttpStatusCode.SUCCESS, true, TWEETS_MESSAGES.GET_TWEETS_SUCCESS, response)
   }
 
-  async getTweetChildren({ parent_id, page, limit }: { parent_id: string; page: number; limit: number }) {
+  async getTweetChildren({
+    parent_id,
+    page,
+    limit,
+    tweet_type = 0
+  }: {
+    parent_id: string
+    page: number
+    limit: number
+    tweet_type: TweetType
+  }) {
     const offset = (page - 1) * limit
-
     const { count, rows: tweets } = await db.Tweet.findAndCountAll({
-      where: { parent_id },
+      where: {
+        parent_id,
+        type: tweet_type
+      },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
       include: [
         {
