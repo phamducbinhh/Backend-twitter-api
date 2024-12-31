@@ -21,5 +21,10 @@ router.get(
   isUserLoggedInValidator(verifyToken(TokenType.AccessToken)),
   asyncHandler(tweetController.getTweetDetail)
 )
+router.get(
+  '/:tweet_id/children',
+  isUserLoggedInValidator(verifyToken(TokenType.AccessToken)),
+  asyncHandler(tweetController.getTweetChildren)
+)
 
 export default router

@@ -82,7 +82,6 @@ class TweetService {
     })
   }
 
-  // Hàm chính để tạo Tweet
   async createTweet({ id, body }: { id: string; body: TweetRequestBody }) {
     const transaction = await db.sequelize.transaction()
 
@@ -181,6 +180,80 @@ class TweetService {
     }
 
     const response = new TweetResponse(tweet)
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, TWEETS_MESSAGES.GET_TWEETS_SUCCESS, response)
+  }
+
+  async getTweetChildren({ parent_id, page, limit }: { parent_id: string; page: number; limit: number }) {
+    const offset = (page - 1) * limit
+
+    const { count, rows: tweets } = await db.Tweet.findAndCountAll({
+      where: { parent_id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      include: [
+        {
+          model: db.TweetMedia,
+          as: 'tweet_media',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.Media,
+              as: 'media',
+              attributes: ['id', 'url', 'type']
+            }
+          ]
+        },
+        {
+          model: db.TweetHashtag,
+          as: 'tweet_hashtags',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.Hashtag,
+              as: 'hashtag',
+              attributes: ['id', 'name']
+            }
+          ]
+        },
+        {
+          model: db.Mention,
+          as: 'mentions',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.User,
+              as: 'user',
+              attributes: ['id', 'username', 'name', 'email']
+            }
+          ]
+        },
+        {
+          model: db.Bookmark,
+          as: 'bookmarks',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.User,
+              as: 'user',
+              attributes: ['id', 'username', 'name', 'email']
+            }
+          ]
+        }
+      ],
+      limit,
+      offset
+    })
+
+    if (!tweets) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, TWEETS_MESSAGES.TWEET_NOT_FOUND)
+    }
+
+    const response = {
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalItems: count,
+      items: tweets.map((tweet: any) => new TweetResponse(tweet))
+    }
 
     return handleResponse(HttpStatusCode.SUCCESS, true, TWEETS_MESSAGES.GET_TWEETS_SUCCESS, response)
   }

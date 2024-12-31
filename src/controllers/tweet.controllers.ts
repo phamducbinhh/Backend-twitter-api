@@ -22,6 +22,20 @@ class TweetController {
       data: response.data
     })
   }
+  async getTweetChildren(req: any, res: Response) {
+    const page = parseInt(req.query.page || 1)
+    const limit = parseInt(req.query.limit || 10)
+    const response = await tweetService.getTweetChildren({
+      parent_id: req.params.tweet_id,
+      page,
+      limit
+    })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message,
+      data: response.data
+    })
+  }
 }
 
 const tweetController = new TweetController()
