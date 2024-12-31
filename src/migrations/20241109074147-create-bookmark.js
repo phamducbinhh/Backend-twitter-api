@@ -15,8 +15,7 @@ module.exports = {
           model: 'users',
           key: 'id'
         },
-        onDelete: 'SET NULL',
-        unique: true
+        onDelete: 'SET NULL'
       },
       tweet_id: {
         type: Sequelize.INTEGER,
@@ -24,7 +23,8 @@ module.exports = {
           model: 'tweets',
           key: 'id'
         },
-        onDelete: 'SET NULL'
+        onDelete: 'SET NULL',
+        unique: true
       },
       createdAt: {
         allowNull: false,
