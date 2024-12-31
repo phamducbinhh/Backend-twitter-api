@@ -12,8 +12,8 @@ export class UserRespone implements UserType {
   cover_photo: string
   avatar: string
   verify_status: number
-  following: any[]
-  followers: any[]
+  following: number // Số lượng người theo dõi
+  followers: number // Số lượng người được theo dõi
 
   constructor(user: UserType) {
     this.id = user.id
@@ -27,8 +27,8 @@ export class UserRespone implements UserType {
     this.cover_photo = user.cover_photo
     this.avatar = user.avatar
     this.verify_status = user.verify_status
-    this.following = this.mapFollowing(user.following)
-    this.followers = this.mapFollowers(user.followers)
+    this.following = user.following.length // Lấy số lượng người đang theo dõi
+    this.followers = user.followers.length // Lấy số lượng người được theo dõi
   }
 
   public static toResponse(
@@ -47,22 +47,5 @@ export class UserRespone implements UserType {
       avatar: user.avatar,
       verify_status: user.verify_status
     }
-  }
-
-  private mapFollowing(following: any[]): any[] {
-    return following.map((item: any) => ({
-      id: item.followed.id,
-      username: item.followed.username,
-      name: item.followed.name,
-      email: item.followed.email
-    }))
-  }
-  private mapFollowers(followers: any[]): any[] {
-    return followers.map((item: any) => ({
-      id: item.follow.id,
-      username: item.follow.username,
-      name: item.follow.name,
-      email: item.follow.email
-    }))
   }
 }

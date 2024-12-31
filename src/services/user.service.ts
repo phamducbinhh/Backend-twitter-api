@@ -103,26 +103,12 @@ class UserServices {
         {
           model: db.Follower,
           as: 'following',
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
-          include: [
-            {
-              model: db.User,
-              as: 'followed',
-              attributes: ['id', 'username', 'name', 'email']
-            }
-          ]
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         },
         {
           model: db.Follower,
           as: 'followers',
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
-          include: [
-            {
-              model: db.User,
-              as: 'follow',
-              attributes: ['id', 'username', 'name', 'email']
-            }
-          ]
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         }
       ]
     })
@@ -157,26 +143,12 @@ class UserServices {
         {
           model: db.Follower,
           as: 'following',
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
-          include: [
-            {
-              model: db.User,
-              as: 'followed',
-              attributes: ['id', 'username', 'name', 'email']
-            }
-          ]
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         },
         {
           model: db.Follower,
           as: 'followers',
-          attributes: { exclude: ['createdAt', 'updatedAt'] },
-          include: [
-            {
-              model: db.User,
-              as: 'follow',
-              attributes: ['id', 'username', 'name', 'email']
-            }
-          ]
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         }
       ]
     })
