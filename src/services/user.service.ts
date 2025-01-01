@@ -205,7 +205,6 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UNFOLLOW_SUCCESS)
   }
-
   async changePassword({ id, body }: { id: string; body: any }) {
     const user = await db.User.findByPk(id)
 
@@ -218,6 +217,73 @@ class UserServices {
     })
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS)
+  }
+
+  async getFollowing({ user_id, page, limit }: { user_id: string; page: number; limit: number }) {
+    const offset = (page - 1) * limit
+
+    const following = await db.Follower.findAndCountAll({
+      where: { user_id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      include: [
+        {
+          model: db.User,
+          as: 'followed',
+          attributes: ['id', 'username', 'name', 'email']
+        }
+      ],
+      limit,
+      offset
+    })
+
+    if (!following) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.NO_FOLLOWING)
+    }
+
+    const data = following.rows.map((item: any) => ({
+      id: item.followed.id,
+      username: item.followed.username,
+      name: item.followed.name,
+      email: item.followed.email
+    }))
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_FOLLOWING_SUCCESS, {
+      total: following.count,
+      items: data
+    })
+  }
+  async getFollowers({ user_id, page, limit }: { user_id: string; page: number; limit: number }) {
+    const offset = (page - 1) * limit
+
+    const followers = await db.Follower.findAndCountAll({
+      where: { followed_user_id: user_id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      include: [
+        {
+          model: db.User,
+          as: 'follow',
+          attributes: ['id', 'username', 'name', 'email']
+        }
+      ],
+      limit,
+      offset
+    })
+
+    if (!followers) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.NO_FOLLOWING)
+    }
+
+    const data = followers.rows.map((item: any) => ({
+      id: item.follow.id,
+      username: item.follow.username,
+      name: item.follow.name,
+      email: item.follow.email
+    }))
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_FOLLOWING_SUCCESS, {
+      total: followers.count,
+      items: data
+    })
   }
 }
 

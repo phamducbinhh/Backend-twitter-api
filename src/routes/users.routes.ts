@@ -34,8 +34,6 @@ router.post(
 
 router.get('/profile', verifyToken(TokenType.AccessToken), asyncHandler(userController.getmetProfile))
 
-router.get('/:username', verifyToken(TokenType.AccessToken), asyncHandler(userController.getProfile))
-
 router.post('/follow', verifyToken(TokenType.AccessToken), validate(FollowSchema), asyncHandler(userController.follow))
 
 router.delete(
@@ -70,5 +68,11 @@ router.put(
   validate(ChangePasswordSchema),
   asyncHandler(userController.changePassword)
 )
+
+router.get('/following', verifyToken(TokenType.AccessToken), asyncHandler(userController.getFollowing))
+
+router.get('/followers', verifyToken(TokenType.AccessToken), asyncHandler(userController.getFollowers))
+
+router.get('/:username', verifyToken(TokenType.AccessToken), asyncHandler(userController.getProfile))
 
 export default router

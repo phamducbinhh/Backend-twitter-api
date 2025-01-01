@@ -71,7 +71,9 @@ export const USERS_MESSAGES = {
   UPLOAD_SUCCESS: 'Upload success',
   REFRESH_TOKEN_SUCCESS: 'Refresh token success',
   GET_VIDEO_STATUS_SUCCESS: 'Get video status success',
-  CANNOT_FOLLOW_YOURSELF: 'Cannot follow yourself'
+  CANNOT_FOLLOW_YOURSELF: 'Cannot follow yourself',
+  NO_FOLLOWING: 'No following',
+  GET_FOLLOWING_SUCCESS: 'Get following success'
 } as const
 
 export const TWEETS_MESSAGES = {

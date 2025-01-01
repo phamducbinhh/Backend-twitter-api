@@ -90,6 +90,28 @@ class UserController {
       message: response.message
     })
   }
+
+  async getFollowing(req: { user: { id: string } } | any, res: Response) {
+    const page = Number(req.query.page || 1)
+    const limit = Number(req.query.limit || 10)
+    const response = await userService.getFollowing({ user_id: req.user?.id, page, limit })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message,
+      data: response.data
+    })
+  }
+
+  async getFollowers(req: { user: { id: string } } | any, res: Response) {
+    const page = Number(req.query.page || 1)
+    const limit = Number(req.query.limit || 10)
+    const response = await userService.getFollowers({ user_id: req.user?.id, page, limit })
+    sendResponse(res, response.statusCode, {
+      success: response.success,
+      message: response.message,
+      data: response.data
+    })
+  }
 }
 
 const userController = new UserController()
