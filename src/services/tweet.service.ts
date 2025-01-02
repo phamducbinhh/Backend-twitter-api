@@ -6,6 +6,7 @@ import { TweetRequestBody } from '~/types/tweet.type'
 import { handleResponse } from '~/utils/response'
 
 const db = require('../models')
+const { Op } = require('sequelize')
 
 class TweetService {
   // Tạo tweet mới
@@ -254,6 +255,95 @@ class TweetService {
     }
 
     return handleResponse(HttpStatusCode.SUCCESS, true, TWEETS_MESSAGES.GET_TWEETS_SUCCESS, response)
+  }
+
+  async getNewFeeds({ user_id, page, limit }: { user_id: string; page: number; limit: number }) {
+    const offset = (page - 1) * limit
+
+    // Lấy danh sách các followed_user_id từ bảng Follower
+    const followedUserIds = await db.Follower.findAll({
+      where: { user_id },
+      attributes: ['followed_user_id']
+    })
+
+    // Truy vấn bài viết từ người dùng mà bạn đang theo dõi
+    const tweets = await db.Tweet.findAndCountAll({
+      where: {
+        [Op.or]: [
+          {
+            user_id: user_id // Bài tweet của chính bạn
+          },
+          {
+            user_id: {
+              [Op.in]: followedUserIds.map((followed: any) => followed.followed_user_id) // Lọc theo danh sách id của những người bạn đang theo dõi
+            }
+          }
+        ]
+      },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      include: [
+        {
+          model: db.TweetMedia,
+          as: 'tweet_media',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.Media,
+              as: 'media',
+              attributes: ['id', 'url', 'type']
+            }
+          ]
+        },
+        {
+          model: db.TweetHashtag,
+          as: 'tweet_hashtags',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.Hashtag,
+              as: 'hashtag',
+              attributes: ['id', 'name']
+            }
+          ]
+        },
+        {
+          model: db.Mention,
+          as: 'mentions',
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: db.User,
+              as: 'user',
+              attributes: ['id', 'username', 'name', 'email']
+            }
+          ]
+        },
+        {
+          model: db.Bookmark,
+          as: 'bookmarks',
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
+        }
+      ],
+      limit,
+      offset
+    })
+
+    if (!tweets) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, TWEETS_MESSAGES.TWEET_NOT_FOUND)
+    }
+
+    // Tạo cấu trúc dữ liệu trả về
+    const response = {
+      currentPage: page,
+      totalPages: Math.ceil(tweets.count / limit),
+      totalItems: tweets.count,
+      items: tweets.rows.map((tweet: any) => new TweetResponse(tweet))
+    }
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, TWEETS_MESSAGES.GET_TWEETS_SUCCESS, {
+      total: tweets.count,
+      tweets: response
+    })
   }
 }
 

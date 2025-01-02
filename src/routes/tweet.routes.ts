@@ -27,4 +27,6 @@ router.get(
   asyncHandler(tweetController.getTweetChildren)
 )
 
+router.get('/', verifyToken(TokenType.AccessToken), asyncHandler(tweetController.getNewFeeds))
+
 export default router
