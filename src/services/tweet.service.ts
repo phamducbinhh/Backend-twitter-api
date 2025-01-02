@@ -337,6 +337,13 @@ class TweetService {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, TWEETS_MESSAGES.TWEET_NOT_FOUND)
     }
 
+    // Tăng user_views cho mỗi tweet
+    await Promise.all(
+      tweets.rows.map(async (tweet: any) => {
+        // Tăng user_views của tweet
+        await tweet.update({ user_views: tweet.user_views + 1 })
+      })
+    )
     // Tạo cấu trúc dữ liệu trả về
     const response = {
       currentPage: page,
