@@ -275,13 +275,18 @@ class TweetService {
           },
           {
             user_id: {
-              [Op.in]: followedUserIds.map((followed: any) => followed.followed_user_id) // Lọc theo danh sách id của những người bạn đang theo dõi
+              [Op.in]: followedUserIds.map((followed: any) => followed.followed_user_id)
             }
           }
         ]
       },
       attributes: { exclude: ['createdAt', 'updatedAt'] },
       include: [
+        {
+          model: db.User,
+          as: 'author',
+          attributes: ['id', 'username', 'name', 'email', 'avatar']
+        },
         {
           model: db.TweetMedia,
           as: 'tweet_media',
@@ -337,7 +342,7 @@ class TweetService {
       currentPage: page,
       totalPages: Math.ceil(tweets.count / limit),
       totalItems: tweets.count,
-      items: tweets.rows.map((tweet: any) => new TweetResponse(tweet))
+      items: tweets.rows.map((tweet: any) => TweetResponse.toResponse(tweet))
     }
 
     return handleResponse(HttpStatusCode.SUCCESS, true, TWEETS_MESSAGES.GET_TWEETS_SUCCESS, {
