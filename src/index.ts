@@ -11,7 +11,7 @@ import { initFolder } from './utils/files'
 const app = express()
 
 const corsOptions = {
-  origin: ['https://local.oeg.vn'],
+  origin: ['http://localhost:3000'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   preflightContinue: false,
   credentials: true,
