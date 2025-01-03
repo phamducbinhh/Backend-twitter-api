@@ -14,6 +14,7 @@ export class UserRespone implements UserType {
   verify_status: number
   following: number // Số lượng người theo dõi
   followers: number // Số lượng người được theo dõi
+  createdAt?: Date
 
   constructor(user: UserType) {
     this.id = user.id
@@ -29,6 +30,7 @@ export class UserRespone implements UserType {
     this.verify_status = user.verify_status
     this.following = user.following.length // Lấy số lượng người đang theo dõi
     this.followers = user.followers.length // Lấy số lượng người được theo dõi
+    this.createdAt = user.createdAt
   }
 
   public static toResponse(
