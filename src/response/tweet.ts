@@ -14,6 +14,8 @@ export class TweetResponse {
   tweet_hashtags: TweetHashtag[]
   mentions: Mention[]
   bookmarks: number
+  likes: number
+  views: number
   author?: UserType
 
   constructor(tweet: any) {
@@ -29,6 +31,8 @@ export class TweetResponse {
     this.tweet_hashtags = this.mapTweetHashtags(tweet.tweet_hashtags)
     this.mentions = this.mapMentions(tweet.mentions)
     this.bookmarks = tweet.bookmarks.length
+    this.likes = tweet.likes.length
+    this.views = (this.user_views || 0) + (this.guest_views || 0)
   }
 
   private mapTweetMedia(tweetMedia: TweetMedia[]): TweetMedia[] {

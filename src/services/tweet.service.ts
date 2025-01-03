@@ -165,6 +165,11 @@ class TweetService {
           model: db.Bookmark,
           as: 'bookmarks',
           attributes: { exclude: ['createdAt', 'updatedAt'] }
+        },
+        {
+          model: db.Like,
+          as: 'likes',
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
         }
       ]
     })
@@ -236,6 +241,11 @@ class TweetService {
         {
           model: db.Bookmark,
           as: 'bookmarks',
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
+        },
+        {
+          model: db.Like,
+          as: 'likes',
           attributes: { exclude: ['createdAt', 'updatedAt'] }
         }
       ],
@@ -326,6 +336,11 @@ class TweetService {
         {
           model: db.Bookmark,
           as: 'bookmarks',
+          attributes: { exclude: ['createdAt', 'updatedAt'] }
+        },
+        {
+          model: db.Like,
+          as: 'likes',
           attributes: { exclude: ['createdAt', 'updatedAt'] }
         }
       ],
