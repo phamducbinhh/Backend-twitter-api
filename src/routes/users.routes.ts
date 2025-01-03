@@ -73,6 +73,6 @@ router.get('/following', verifyToken(TokenType.AccessToken), asyncHandler(userCo
 
 router.get('/followers', verifyToken(TokenType.AccessToken), asyncHandler(userController.getFollowers))
 
-router.get('/:username', verifyToken(TokenType.AccessToken), asyncHandler(userController.getProfile))
+router.get('/:name', verifyToken(TokenType.AccessToken), asyncHandler(userController.getProfile))
 
 export default router

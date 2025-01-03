@@ -55,7 +55,7 @@ class UserController {
   }
 
   async getProfile(req: any, res: Response) {
-    const response = await userService.getProfile({ username: req.params.username })
+    const response = await userService.getProfile({ name: req.params.name })
     sendResponse(res, response.statusCode, {
       success: response.success,
       message: response.message,

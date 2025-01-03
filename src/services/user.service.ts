@@ -133,9 +133,9 @@ class UserServices {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.UPDATE_ME_SUCCESS, response)
   }
-  async getProfile({ username }: { username: string }) {
+  async getProfile({ name }: { name: string }) {
     const user = await db.User.findOne({
-      where: { username },
+      where: { name },
       attributes: {
         exclude: ['password', 'createdAt', 'updatedAt', 'email_verify_token', 'forgot_password_token']
       },
