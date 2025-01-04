@@ -4,6 +4,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { LoginReqBody, RefreshTokenReqBody, RegisterReqBody } from '~/types/users.type'
 import { comparePassword, hashPassword } from '~/utils/bcrypt'
 import { setTokenCookie } from '~/utils/cookies'
+import { sendVerifyRegisterEmail } from '~/utils/email'
 import { generateAccessToken, generateEmailVerifyToken, generateRefreshToken } from '~/utils/jwt'
 import { handleResponse } from '~/utils/response'
 import refreshTokenService from './refreshToken.service'
@@ -85,6 +86,14 @@ class AuthServices {
     // Generate email verification token
     const emailVerifyToken = generateEmailVerifyToken(user.id)
     await db.User.update({ email_verify_token: emailVerifyToken }, { where: { id: user.id } })
+
+    // Flow verify email
+    // 1. Server send email to user
+    // 2. User click link in email
+    // 3. Client send request to server with email_verify_token
+    // 4. Server verify email_verify_token
+    // 5. Client receive access_token and refresh_token
+    await sendVerifyRegisterEmail(user.email, emailVerifyToken)
 
     return handleResponse(HttpStatusCode.CREATED, true, USERS_MESSAGES.REGISTER_SUCCESS, { token, refreshToken })
   }

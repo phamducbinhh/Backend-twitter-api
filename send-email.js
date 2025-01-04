@@ -65,5 +65,5 @@ const sendVerifyEmail = async (toAddress, subject, body) => {
 sendVerifyEmail(
   'phamducbinh1712000@gmail.com',
   'Tiêu đề email',
-  '<h1>Nội dung email được gửi từ phamducbinh1712000@gmail.com ngày 04</h1>'
+  '<h1>Nội dung email được gửi từ phamducbinh1712000@gmail.com ngày 23</h1>'
 )

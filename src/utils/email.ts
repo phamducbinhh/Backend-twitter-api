@@ -1,4 +1,6 @@
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
+import fs from 'fs'
+import path from 'path'
 import { envConfig } from '~/constants/config'
 
 // Create SES service object.
@@ -9,6 +11,8 @@ const sesClient = new SESClient({
     accessKeyId: envConfig.awsAccessKeyId
   }
 })
+
+const verifyEmailTemplate = fs.readFileSync(path.resolve('src/templates/verify-email.html'), 'utf8')
 
 const createSendEmailCommand = ({
   fromAddress,
@@ -58,4 +62,20 @@ const sendVerifyEmail = (toAddress: string, subject: string, body: string) => {
     subject
   })
   return sesClient.send(sendEmailCommand)
+}
+
+export const sendVerifyRegisterEmail = (
+  toAddress: string,
+  email_verify_token: string,
+  template: string = verifyEmailTemplate
+) => {
+  return sendVerifyEmail(
+    toAddress,
+    'Verify your email',
+    template
+      .replace('{{title}}', 'Please verify your email')
+      .replace('{{content}}', 'Click the button below to verify your email')
+      .replace('{{titleLink}}', 'Verify')
+      .replace('{{link}}', `${envConfig.clientUrl}/email-verifications?token=${email_verify_token}`)
+  )
 }
