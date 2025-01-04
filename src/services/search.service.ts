@@ -1,13 +1,28 @@
+import { PeopleFollow } from '~/constants/enums'
 import { HttpStatusCode } from '~/constants/HttpStatusCode'
 import { handleResponse } from '~/utils/response'
 const db = require('../models')
 const { Op } = require('sequelize')
 class SearchService {
-  private async searchTweets(q: string, limit: number, offset: number) {
+  private async searchTweets(q: string, limit: number, offset: number, userId?: string, people_follow?: PeopleFollow) {
+    const whereClause: any = {
+      content: { [Op.like]: `%${q}%` }
+    }
+
+    // Nếu peopleFollow là "1", lọc theo người dùng mà userId đang theo dõi
+    if (people_follow === PeopleFollow.Following && userId) {
+      const followedUserIds = await db.Follower.findAll({
+        where: { user_id: userId },
+        attributes: ['followed_user_id']
+      })
+
+      const followedIds = followedUserIds.map((followed: any) => followed.followed_user_id)
+
+      whereClause.user_id = { [Op.in]: followedIds }
+    }
+
     const tweets = await db.Tweet.findAndCountAll({
-      where: {
-        content: { [Op.like]: `%${q}%` }
-      },
+      where: whereClause,
       include: [
         {
           model: db.User,
@@ -85,7 +100,21 @@ class SearchService {
     }
   }
 
-  async search({ q, type, page = 1, limit = 10 }: { q: string; type: string; page?: number; limit?: number }) {
+  async search({
+    q,
+    type,
+    page = 1,
+    limit = 10,
+    userId,
+    people_follow
+  }: {
+    q: string
+    type: string
+    page?: number
+    limit?: number
+    userId?: string
+    people_follow?: PeopleFollow
+  }) {
     if (!q || !type) {
       return handleResponse(HttpStatusCode.BAD_REQUEST, false, 'Query and type are required')
     }
@@ -96,7 +125,7 @@ class SearchService {
 
     switch (type) {
       case 'tweet':
-        results = await this.searchTweets(q, limit, offset)
+        results = await this.searchTweets(q, limit, offset || 0, userId, people_follow)
         break
       case 'user':
         results = await this.searchUsers(q, limit, offset)
