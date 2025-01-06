@@ -4,6 +4,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { UserRespone } from '~/response/user'
 import { ForgotPasswordReqBody, ResetPasswordReqBody, VerifyEmailReqBody } from '~/types/users.type'
 import { hashPassword } from '~/utils/bcrypt'
+import { sendForgotPasswordEmail } from '~/utils/email'
 import { generateEmailVerifyToken, generateForgotPasswordToken } from '~/utils/jwt'
 import { handleResponse } from '~/utils/response'
 
@@ -67,6 +68,9 @@ class UserServices {
         where: { id: user.id }
       }
     )
+
+    // Send email
+    await sendForgotPasswordEmail(userEmail, forgotPasswordToken)
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD)
   }
