@@ -84,7 +84,7 @@ class AuthServices {
     await refreshTokenService.createRefreshToken(user.id, refreshToken)
 
     // Generate email verification token
-    const emailVerifyToken = generateEmailVerifyToken(user.id)
+    const emailVerifyToken = generateEmailVerifyToken({ id: user.id })
     await db.User.update({ email_verify_token: emailVerifyToken }, { where: { id: user.id } })
 
     // Flow verify email
