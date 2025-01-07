@@ -64,6 +64,30 @@ class ConversationService {
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_CONVERSATIONS_SUCCESS, response)
   }
+
+  async getReceivers({ sender_id }: { sender_id: string }) {
+    const conversations = await db.Conversation.findAll({
+      where: {
+        sender_id
+      },
+      include: [
+        {
+          model: db.User,
+          as: 'receiver',
+          attributes: ['id', 'username', 'name', 'avatar']
+        }
+      ],
+      attributes: ['receiver_id'],
+      group: ['receiver_id']
+    })
+
+    if (!conversations || conversations.length === 0) {
+      return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.NO_CONVERSATION)
+    }
+
+    const receivers = conversations.map((conversation: any) => conversation.receiver)
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_CONVERSATIONS_SUCCESS, receivers)
+  }
 }
 
 const conversationService = new ConversationService()

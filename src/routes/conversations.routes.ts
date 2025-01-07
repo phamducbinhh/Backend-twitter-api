@@ -16,4 +16,11 @@ router.get(
   asyncHandler(conversationsController.getConversations)
 )
 
+router.get(
+  '/',
+  verifyToken(TokenType.AccessToken),
+  verifiedUserValidator,
+  asyncHandler(conversationsController.getReceivers)
+)
+
 export default router
