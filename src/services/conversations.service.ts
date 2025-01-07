@@ -58,7 +58,7 @@ class ConversationService {
       currentPage: page,
       totalPages: Math.ceil(count / limit),
       totalItems: count,
-      items: conversations
+      conversations
     }
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_CONVERSATIONS_SUCCESS, response)
