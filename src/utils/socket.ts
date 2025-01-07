@@ -20,23 +20,27 @@ const initSocket = (httpServer: ServerHttp) => {
 
   // Lắng nghe sự kiện kết nối từ client.
   io.on('connection', (socket) => {
+    console.log(`user ${socket.id} connected`)
     // Lấy `id` từ thông tin xác thực (auth) trong kết nối.
-    const { id } = socket.handshake.auth as { id: string }
+    const { user_id } = socket.handshake.auth as { user_id: string }
 
     // Nếu `id` không tồn tại, ghi log lỗi và ngắt kết nối client.
-    if (!id) {
+    if (!user_id) {
       console.error('Missing user ID during connection')
       socket.disconnect()
       return
     }
 
     // Lưu thông tin `socket_id` của người dùng vào danh sách `users`.
-    users[id] = {
+    users[user_id] = {
       socket_id: socket.id
     }
 
-    console.log(`User connected: ${id}, socket_id: ${socket.id}`)
-
+    socket.on('error', (error) => {
+      if (error.message === 'Unauthorized') {
+        socket.disconnect()
+      }
+    })
     // Lắng nghe sự kiện `send_message` khi client gửi tin nhắn riêng.
     socket.on('send_message', async (data) => {
       const { receiver_id, sender_id, content } = data.payload
@@ -66,12 +70,12 @@ const initSocket = (httpServer: ServerHttp) => {
         payload: conversation
       })
 
-      console.log(`Message from ${id} to ${receiver_id}: ${content}`)
+      console.log(`Message from ${user_id} to ${receiver_id}: ${content}`)
     })
 
     socket.on('disconnect', () => {
-      delete users[id]
-      console.log(`User ${id} disconnected`)
+      delete users[user_id]
+      console.log(`User ${user_id} disconnected`)
     })
   })
 }
