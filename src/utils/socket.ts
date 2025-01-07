@@ -3,98 +3,95 @@ import { Server } from 'socket.io'
 import { UserVerifyStatus } from '~/constants/enums'
 const db = require('../models')
 
+// Tạo đối tượng lưu trữ người dùng
+const users: { [key: string]: { socket_id: string } } = {}
+
+// Middleware kiểm tra trạng thái xác thực của người dùng
+const authenticateUser = async (socket: any, next: any) => {
+  try {
+    const { verify_status } = socket.handshake.auth as { verify_status: number }
+    if (verify_status !== UserVerifyStatus.Verified) {
+      throw new Error('🚨 User not verified')
+    }
+    next()
+  } catch (error) {
+    next({
+      message: 'Unauthorized',
+      name: 'UnauthorizedError',
+      data: error
+    })
+  }
+}
+
+// Lưu người dùng vào danh sách
+const addUser = (user_id: string, socket_id: string) => {
+  users[user_id] = { socket_id }
+  console.log(`User ${user_id} connected with socket_id: ${socket_id}`)
+}
+
+// Xóa người dùng khỏi danh sách khi ngắt kết nối
+const removeUser = (user_id: string) => {
+  delete users[user_id]
+  console.log(`User ${user_id} disconnected`)
+}
+
+// Lưu tin nhắn vào database
+const saveConversation = async (conversation: { content: string; sender_id: string; receiver_id: string }) => {
+  await db.Conversation.create(conversation)
+  console.log(
+    `Message saved to DB from ${conversation.sender_id} to ${conversation.receiver_id}: ${conversation.content}`
+  )
+}
+
+// Xử lý gửi tin nhắn
+const handleSendMessage = async (socket: any, data: any) => {
+  const { receiver_id, sender_id, content } = data.payload
+  const receiver = users[receiver_id]
+
+  const conversation = { content, sender_id, receiver_id }
+  await saveConversation(conversation)
+
+  // Nếu người nhận không kết nối, chỉ lưu tin nhắn vào DB
+  if (!receiver) {
+    console.log(`Receiver ${receiver_id} not connected, message saved to DB`)
+    return
+  }
+
+  // Nếu người nhận kết nối, gửi tin nhắn ngay lập tức
+  socket.to(receiver.socket_id).emit('receive_message', { payload: conversation })
+  console.log(`Message from ${sender_id} to ${receiver_id}: ${content}`)
+}
+
+// Khởi tạo Socket.IO
 const initSocket = (httpServer: ServerHttp) => {
-  //Khởi tạo Socket.IO
   const io = new Server(httpServer, {
     cors: {
       origin: 'http://localhost:3000'
     }
   })
 
-  // Tạo một đối tượng để lưu danh sách người dùng kết nối.
-  // Key là `id` của người dùng, value là `socket_id` của socket.
-  const users: {
-    [key: string]: {
-      socket_id: string
-    }
-  } = {}
+  // Sử dụng middleware để xác thực người dùng
+  io.use(authenticateUser)
 
-  //middleware
-  io.use(async (socket, next) => {
-    try {
-      const { verify_status } = socket.handshake.auth as { verify_status: number }
-      if (verify_status !== UserVerifyStatus.Verified) {
-        throw new Error('🚨 User not verified')
-      }
-      next()
-    } catch (error) {
-      next({
-        message: 'Unauthorized',
-        name: 'UnauthorizedError',
-        data: error
-      })
-    }
-  })
-
-  // Lắng nghe sự kiện kết nối từ client.
+  // Lắng nghe sự kiện kết nối
   io.on('connection', (socket) => {
-    console.log(`user ${socket.id} connected`)
-    // Lấy `id` từ thông tin xác thực (auth) trong kết nối.
     const { user_id } = socket.handshake.auth as { user_id: string }
 
-    // Nếu `id` không tồn tại, ghi log lỗi và ngắt kết nối client.
+    // Kiểm tra nếu user_id không có trong kết nối
     if (!user_id) {
       console.error('Missing user ID during connection')
       socket.disconnect()
       return
     }
 
-    // Lưu thông tin `socket_id` của người dùng vào danh sách `users`.
-    users[user_id] = {
-      socket_id: socket.id
-    }
+    // Thêm người dùng vào danh sách
+    addUser(user_id, socket.id)
 
-    socket.on('error', (error) => {
-      if (error.message === 'Unauthorized') {
-        socket.disconnect()
-      }
-    })
-    // Lắng nghe sự kiện `send_message` khi client gửi tin nhắn riêng.
-    socket.on('send_message', async (data) => {
-      const { receiver_id, sender_id, content } = data.payload
-      // Tìm người nhận trong danh sách `users` dựa trên `data.to`.
-      const receiver = users[receiver_id]
+    // Lắng nghe sự kiện 'send_message'
+    socket.on('send_message', (data) => handleSendMessage(socket, data))
 
-      // Nếu người nhận không tồn tại, ghi log lỗi và dừng xử lý.
-      if (!receiver) {
-        console.error(`Receiver not found: ${receiver_id}`)
-        return
-      }
-
-      // Lấy `socket_id` của người nhận.
-      const receiver_socket_id = receiver.socket_id
-
-      const conversation = {
-        content: content,
-        sender_id: sender_id,
-        receiver_id: receiver_id
-      }
-
-      //lưu tin nhắn vào database
-      await db.Conversation.create(conversation)
-
-      // Thông báo cho client nhận đến tin nhắn riêng.
-      socket.to(receiver_socket_id).emit('receive_message', {
-        payload: conversation
-      })
-
-      console.log(`Message from ${user_id} to ${receiver_id}: ${content}`)
-    })
-
-    socket.on('disconnect', () => {
-      delete users[user_id]
-      console.log(`User ${user_id} disconnected`)
-    })
+    // Xử lý sự kiện ngắt kết nối
+    socket.on('disconnect', () => removeUser(user_id))
   })
 }
 
