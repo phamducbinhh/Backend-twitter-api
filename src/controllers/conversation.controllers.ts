@@ -6,7 +6,7 @@ class ConversationsController {
   constructor() {}
 
   async getConversations(req: { user: { id: string } } | any, res: Response) {
-    const limit = Number(req.query.limit) || 10
+    const limit = Number(req.query.limit) || 100
     const page = Number(req.query.page) || 1
     const { receiver_id } = req.params
     const sender_id = req.user?.id
