@@ -8,18 +8,31 @@ const initSocket = (httpServer: ServerHttp) => {
     }
   })
 
+  const users: {
+    [key: string]: {
+      socket_id: string
+    }
+  } = {}
+
   io.on('connection', (socket) => {
-    console.log(`user ${socket.id} connected`)
+    const { id } = socket.handshake.auth as { id: string }
 
-    socket.on('message', (data) => {
-      console.log(`data from client: ${data}`)
-    })
+    users[id] = {
+      socket_id: socket.id
+    }
 
-    socket.emit('message', {
-      data: 'Hello from server!'
+    socket.on('private message', (data) => {
+      const receiver_socket_id = users[data.to].socket_id
+
+      socket.to(receiver_socket_id).emit('receive private message', {
+        content: data.content,
+        sender: id,
+        time: new Date().toLocaleTimeString()
+      })
     })
 
     socket.on('disconnect', () => {
+      delete users[id]
       console.log(`user ${socket.id} disconnected`)
     })
   })
