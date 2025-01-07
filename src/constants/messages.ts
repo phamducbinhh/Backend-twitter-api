@@ -73,7 +73,9 @@ export const USERS_MESSAGES = {
   GET_VIDEO_STATUS_SUCCESS: 'Get video status success',
   CANNOT_FOLLOW_YOURSELF: 'Cannot follow yourself',
   NO_FOLLOWING: 'No following',
-  GET_FOLLOWING_SUCCESS: 'Get following success'
+  GET_FOLLOWING_SUCCESS: 'Get following success',
+  NO_CONVERSATION: 'No conversation',
+  GET_CONVERSATIONS_SUCCESS: 'Get conversations success'
 } as const
 
 export const TWEETS_MESSAGES = {
