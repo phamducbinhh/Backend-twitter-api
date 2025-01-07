@@ -37,36 +37,37 @@ const initSocket = (httpServer: ServerHttp) => {
 
     console.log(`User connected: ${id}, socket_id: ${socket.id}`)
 
-    // Lắng nghe sự kiện `private message` khi client gửi tin nhắn riêng.
-    socket.on('private message', async (data) => {
-      console.log('🚀 ~ socket.on ~ data:', data)
+    // Lắng nghe sự kiện `send_message` khi client gửi tin nhắn riêng.
+    socket.on('send_message', async (data) => {
+      console.log('🚀 ~ socket.on ~ data:', data.payload)
+      const { receiver_id, sender_id, content } = data.payload
       // Tìm người nhận trong danh sách `users` dựa trên `data.to`.
-      const receiver = users[data.to]
+      const receiver = users[receiver_id]
 
       // Nếu người nhận không tồn tại, ghi log lỗi và dừng xử lý.
       if (!receiver) {
-        console.error(`Receiver not found: ${data.to}`)
+        console.error(`Receiver not found: ${receiver_id}`)
         return
       }
 
       // Lấy `socket_id` của người nhận.
       const receiver_socket_id = receiver.socket_id
 
+      const conversation = {
+        content: content,
+        sender_id: sender_id,
+        receiver_id: receiver_id
+      }
+
       //lưu tin nhắn vào database
-      await db.Conversation.create({
-        content: data.content,
-        sender_id: data.from,
-        receiver_id: data.to
-      })
+      await db.Conversation.create(conversation)
 
       // Thông báo cho client nhận đến tin nhắn riêng.
-      socket.to(receiver_socket_id).emit('receive private message', {
-        content: data.content,
-        sender: id,
-        time: new Date().toLocaleTimeString()
+      socket.to(receiver_socket_id).emit('receive_message', {
+        payload: conversation
       })
 
-      console.log(`Message from ${id} to ${data.to}: ${data.content}`)
+      console.log(`Message from ${id} to ${receiver_id}: ${content}`)
     })
 
     socket.on('disconnect', () => {
