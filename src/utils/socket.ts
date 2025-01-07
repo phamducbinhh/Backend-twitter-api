@@ -45,10 +45,10 @@ const saveConversation = async (conversation: { content: string; sender_id: stri
 
 // Xử lý gửi tin nhắn
 const handleSendMessage = async (socket: any, data: any) => {
-  const { receiver_id, sender_id, content } = data.payload
+  const { receiver_id, sender_id, content, createdAt } = data.payload
   const receiver = users[receiver_id]
 
-  const conversation = { content, sender_id, receiver_id }
+  const conversation = { content, sender_id, receiver_id, createdAt }
   await saveConversation(conversation)
 
   // Nếu người nhận không kết nối, chỉ lưu tin nhắn vào DB
