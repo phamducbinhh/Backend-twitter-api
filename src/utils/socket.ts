@@ -1,5 +1,9 @@
 import { Server as ServerHttp } from 'http'
 import { Server } from 'socket.io'
+import { envConfig } from '~/constants/config'
+import { UserVerifyStatus } from '~/constants/enums'
+import { TokenPayload } from '~/types/users.type'
+import { verifyAccessToken } from './commons'
 const db = require('../models')
 
 const initSocket = (httpServer: ServerHttp) => {
@@ -18,11 +22,43 @@ const initSocket = (httpServer: ServerHttp) => {
     }
   } = {}
 
+  //middleware
+  io.use(async (socket, next) => {
+    try {
+      const { Authorization } = socket.handshake.auth
+
+      const access_token = Authorization?.split(' ')[1]
+      if (!access_token) {
+        throw new Error('🚨 Missing Authorization header')
+      }
+
+      const secretKey = envConfig.jwtSecretAccessToken
+
+      const decoded_authorization = await verifyAccessToken(access_token, secretKey)
+
+      const { verify_status } = decoded_authorization as TokenPayload
+
+      if (verify_status !== UserVerifyStatus.Verified) {
+        throw new Error('🚨 User not verified')
+      }
+      // Truyền decoded_authorization vào socket để sử dụng ở các middleware khác
+      socket.handshake.auth.decoded_authorization = decoded_authorization
+      socket.handshake.auth.access_token = access_token
+      next()
+    } catch (error) {
+      next({
+        message: 'Unauthorized',
+        name: 'UnauthorizedError',
+        data: error
+      })
+    }
+  })
+
   // Lắng nghe sự kiện kết nối từ client.
   io.on('connection', (socket) => {
     console.log(`user ${socket.id} connected`)
     // Lấy `id` từ thông tin xác thực (auth) trong kết nối.
-    const { user_id } = socket.handshake.auth as { user_id: string }
+    const { id: user_id } = socket.handshake.auth.decoded_authorization as TokenPayload
 
     // Nếu `id` không tồn tại, ghi log lỗi và ngắt kết nối client.
     if (!user_id) {
