@@ -47,7 +47,8 @@ class ConversationService {
       ],
       attributes: ['id', 'sender_id', 'receiver_id', 'content', 'createdAt'],
       limit,
-      offset
+      offset,
+      order: [['createdAt', 'ASC']]
     })
 
     if (!conversations || conversations.length === 0) {
