@@ -1,5 +1,6 @@
 import { Server as ServerHttp } from 'http'
 import { Server } from 'socket.io'
+import { UserVerifyStatus } from '~/constants/enums'
 const db = require('../models')
 
 const initSocket = (httpServer: ServerHttp) => {
@@ -21,7 +22,10 @@ const initSocket = (httpServer: ServerHttp) => {
   //middleware
   io.use(async (socket, next) => {
     try {
-      console.log('🚀 ~ io.use ~ socket:', socket)
+      const { verify_status } = socket.handshake.auth as { verify_status: number }
+      if (verify_status !== UserVerifyStatus.Verified) {
+        throw new Error('🚨 User not verified')
+      }
       next()
     } catch (error) {
       next({
