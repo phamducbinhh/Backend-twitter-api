@@ -39,7 +39,6 @@ const initSocket = (httpServer: ServerHttp) => {
 
     // Lắng nghe sự kiện `send_message` khi client gửi tin nhắn riêng.
     socket.on('send_message', async (data) => {
-      console.log('🚀 ~ socket.on ~ data:', data.payload)
       const { receiver_id, sender_id, content } = data.payload
       // Tìm người nhận trong danh sách `users` dựa trên `data.to`.
       const receiver = users[receiver_id]
