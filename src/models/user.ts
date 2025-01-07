@@ -16,6 +16,8 @@ module.exports = (sequelize: any, DataTypes: any) => {
       User.hasMany(models.Bookmark, { foreignKey: 'user_id' })
       User.hasMany(models.Mention, { foreignKey: 'user_id' })
       User.hasMany(models.RefreshToken, { foreignKey: 'user_id' })
+      User.hasMany(models.Conversation, { foreignKey: 'sender_id' })
+      User.hasMany(models.Conversation, { foreignKey: 'receiver_id' })
     }
   }
 
