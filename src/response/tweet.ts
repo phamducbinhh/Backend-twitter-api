@@ -17,6 +17,7 @@ export class TweetResponse {
   likes: number
   views: number
   author?: UserType
+  createdAt?: string
 
   constructor(tweet: any) {
     this.id = tweet.id
@@ -33,6 +34,7 @@ export class TweetResponse {
     this.bookmarks = tweet.bookmarks.length
     this.likes = tweet.likes.length
     this.views = (this.user_views || 0) + (this.guest_views || 0)
+    this.createdAt = tweet.createdAt
   }
 
   private mapTweetMedia(tweetMedia: TweetMedia[]): TweetMedia[] {

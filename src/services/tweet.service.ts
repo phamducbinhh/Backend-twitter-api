@@ -290,7 +290,6 @@ class TweetService {
           }
         ]
       },
-      attributes: { exclude: ['createdAt', 'updatedAt'] },
       include: [
         {
           model: db.User,
@@ -345,7 +344,8 @@ class TweetService {
         }
       ],
       limit,
-      offset
+      offset,
+      order: [['createdAt', 'DESC']]
     })
 
     if (!tweets) {
