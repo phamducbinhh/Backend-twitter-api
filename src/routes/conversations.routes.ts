@@ -17,7 +17,7 @@ router.get(
 )
 
 router.get(
-  '/',
+  '/recentChats',
   verifyToken(TokenType.AccessToken),
   verifiedUserValidator,
   asyncHandler(conversationsController.getReceivers)
