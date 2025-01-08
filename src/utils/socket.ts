@@ -44,7 +44,7 @@ const saveConversation = async (conversation: { content: string; sender_id: stri
 }
 
 // Xử lý gửi tin nhắn
-const handleSendMessage = async (socket: any, data: any) => {
+const handleSendMessage = async (io: any, socket: any, data: any) => {
   const { receiver_id, sender_id, content, createdAt } = data.payload
   const receiver = users[receiver_id]
 
@@ -59,7 +59,12 @@ const handleSendMessage = async (socket: any, data: any) => {
 
   // Nếu người nhận kết nối, gửi tin nhắn ngay lập tức
   socket.to(receiver.socket_id).emit('receive_message', { payload: conversation })
+
   console.log(`Message from ${sender_id} to ${receiver_id}: ${content}`)
+
+  // Bắn sự kiện `update_recent_chats` cho cả người gửi và người nhận
+  io.to(users[sender_id]?.socket_id).emit('update_recent_chats')
+  io.to(users[receiver_id]?.socket_id).emit('update_recent_chats')
 }
 
 // Khởi tạo Socket.IO
@@ -88,7 +93,7 @@ const initSocket = (httpServer: ServerHttp) => {
     addUser(user_id, socket.id)
 
     // Lắng nghe sự kiện 'send_message'
-    socket.on('send_message', (data) => handleSendMessage(socket, data))
+    socket.on('send_message', (data) => handleSendMessage(io, socket, data))
 
     // Xử lý sự kiện ngắt kết nối
     socket.on('disconnect', () => removeUser(user_id))

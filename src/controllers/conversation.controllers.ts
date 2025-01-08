@@ -20,8 +20,8 @@ class ConversationsController {
   }
 
   async getReceivers(req: { user: { id: string } } | any, res: Response) {
-    const sender_id = req.user?.id
-    const response = await conversationService.getReceivers({ sender_id })
+    const user_id = req.user?.id
+    const response = await conversationService.getReceivers({ user_id })
     sendResponse(res, response.statusCode, {
       success: response.success,
       message: response.message,

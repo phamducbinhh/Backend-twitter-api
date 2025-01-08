@@ -65,28 +65,44 @@ class ConversationService {
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_CONVERSATIONS_SUCCESS, response)
   }
 
-  async getReceivers({ sender_id }: { sender_id: string }) {
+  async getReceivers({ user_id }: { user_id: string }) {
     const conversations = await db.Conversation.findAll({
       where: {
-        sender_id
+        [Op.or]: [
+          { sender_id: user_id }, // Trường hợp user_id là người gửi
+          { receiver_id: user_id } // Trường hợp user_id là người nhận
+        ]
       },
       include: [
         {
           model: db.User,
           as: 'receiver',
           attributes: ['id', 'username', 'name', 'avatar']
+        },
+        {
+          model: db.User,
+          as: 'sender',
+          attributes: ['id', 'username', 'name', 'avatar']
         }
       ],
-      attributes: ['receiver_id'],
-      group: ['receiver_id']
+      attributes: ['id', 'sender_id', 'receiver_id', 'content', 'updatedAt'], // Lấy thêm updatedAt để sắp xếp
+      order: [['updatedAt', 'DESC']] // Sắp xếp theo thời gian mới nhất
     })
 
     if (!conversations) {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.NO_CONVERSATION)
     }
 
-    const receivers = conversations.map((conversation: any) => conversation.receiver)
-    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_CONVERSATIONS_SUCCESS, receivers)
+    // Xử lý danh sách để xác định "người còn lại" trong cuộc trò chuyện
+    const receivers = conversations.map((conversation: any) => {
+      const isSender = conversation.sender_id === user_id
+      return isSender ? conversation.receiver : conversation.sender
+    })
+
+    // Loại bỏ các người dùng trùng lặp
+    const uniqueReceivers = Array.from(new Map(receivers.map((receiver: any) => [receiver.id, receiver])).values())
+
+    return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_CONVERSATIONS_SUCCESS, uniqueReceivers)
   }
 }
 
