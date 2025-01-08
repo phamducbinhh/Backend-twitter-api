@@ -85,22 +85,47 @@ class ConversationService {
           attributes: ['id', 'username', 'name', 'avatar']
         }
       ],
-      attributes: ['id', 'sender_id', 'receiver_id', 'content', 'updatedAt'], // Lấy thêm updatedAt để sắp xếp
-      order: [['updatedAt', 'DESC']] // Sắp xếp theo thời gian mới nhất
+      attributes: ['id', 'sender_id', 'receiver_id', 'content', 'updatedAt'],
+      order: [['updatedAt', 'DESC']]
     })
 
     if (!conversations) {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.NO_CONVERSATION)
     }
 
-    // Xử lý danh sách để xác định "người còn lại" trong cuộc trò chuyện
     const receivers = conversations.map((conversation: any) => {
       const isSender = conversation.sender_id === user_id
-      return isSender ? conversation.receiver : conversation.sender
+      const otherUser = isSender ? conversation.receiver : conversation.sender
+
+      return {
+        id: otherUser.id,
+        username: otherUser.username,
+        name: otherUser.name,
+        avatar: otherUser.avatar,
+        lastContent: conversation.content,
+        updatedAt: conversation.updatedAt
+      }
     })
 
-    // Loại bỏ các người dùng trùng lặp
-    const uniqueReceivers = Array.from(new Map(receivers.map((receiver: any) => [receiver.id, receiver])).values())
+    // Tạo mảng mới để lưu trữ người nhận duy nhất
+    const uniqueReceivers: any[] = []
+
+    // Duyệt qua mảng receivers và thêm người nhận duy nhất vào uniqueReceivers
+    for (const receiver of receivers) {
+      // Kiểm tra nếu người nhận đã có trong uniqueReceivers
+      const existingReceiver = uniqueReceivers.find((r) => r.id === receiver.id)
+
+      if (!existingReceiver) {
+        // Nếu người nhận chưa có trong mảng, thêm vào
+        uniqueReceivers.push(receiver)
+      } else {
+        // Nếu người nhận đã có, kiểm tra và cập nhật thông tin nếu cần thiết
+        if (new Date(existingReceiver.updatedAt) < new Date(receiver.updatedAt)) {
+          existingReceiver.lastContent = receiver.lastContent
+          existingReceiver.updatedAt = receiver.updatedAt
+        }
+      }
+    }
 
     return handleResponse(HttpStatusCode.SUCCESS, true, USERS_MESSAGES.GET_CONVERSATIONS_SUCCESS, uniqueReceivers)
   }
