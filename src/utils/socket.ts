@@ -24,14 +24,16 @@ const authenticateUser = async (socket: any, next: any) => {
 }
 
 // Lưu người dùng vào danh sách
-const addUser = (user_id: string, socket_id: string) => {
+const addUser = (io: any, user_id: string, socket_id: string) => {
   users[user_id] = { socket_id }
+  io.emit('getOnlineUsers', Object.keys(users))
   console.log(`User ${user_id} connected with socket_id: ${socket_id}`)
 }
 
 // Xóa người dùng khỏi danh sách khi ngắt kết nối
-const removeUser = (user_id: string) => {
+const removeUser = (io: any, user_id: string) => {
   delete users[user_id]
+  io.emit('getOnlineUsers', Object.keys(users))
   console.log(`User ${user_id} disconnected`)
 }
 
@@ -90,13 +92,13 @@ const initSocket = (httpServer: ServerHttp) => {
     }
 
     // Thêm người dùng vào danh sách
-    addUser(user_id, socket.id)
+    addUser(io, user_id, socket.id)
 
     // Lắng nghe sự kiện 'send_message'
     socket.on('send_message', (data) => handleSendMessage(io, socket, data))
 
     // Xử lý sự kiện ngắt kết nối
-    socket.on('disconnect', () => removeUser(user_id))
+    socket.on('disconnect', () => removeUser(io, user_id))
   })
 }
 
