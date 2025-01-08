@@ -51,7 +51,7 @@ class ConversationService {
       order: [['createdAt', 'ASC']]
     })
 
-    if (!conversations || conversations.length === 0) {
+    if (!conversations) {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.NO_CONVERSATION)
     }
 
@@ -81,7 +81,7 @@ class ConversationService {
       group: ['receiver_id']
     })
 
-    if (!conversations || conversations.length === 0) {
+    if (!conversations) {
       return handleResponse(HttpStatusCode.NOT_FOUND, false, USERS_MESSAGES.NO_CONVERSATION)
     }
 
